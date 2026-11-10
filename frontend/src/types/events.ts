@@ -1,0 +1,11 @@
+import type {ReadingLevel} from './portal';
+export type AgeLevelConfig={level:ReadingLevel;quantity:number;storyIds:string[]};
+export type AgeConfig={age:number;levels:AgeLevelConfig[]};
+export type ReadingEvent={schoolIds?:string[];schools?:{id:string;name:string}[];schoolsNeedReview?:boolean;id:string;name:string;description:string;cover:string;level:ReadingLevel;minAge:number;maxAge:number;startsAt:string;endsAt:string;active:boolean;archived:boolean;mode:'ordem'|'sorteio';quantity:number;storyIds:string[];ageConfigs?:AgeConfig[];recipients:number;status:'ativo'|'inativo'|'programado'|'encerrado'|'arquivado'};
+export type EventDraft=Omit<ReadingEvent,'id'|'status'|'recipients'|'archived'>&{id?:string;recipients?:number};
+export type EligibleStory={id:string;title:string;author:string;level:ReadingLevel;age:string;active:boolean;eligible:boolean};
+export type EventRecipient={id:string;name:string;birthDate:string|null;age:number|null;school:string|null;className:string;status:string;eligible:boolean;assigned:boolean};
+export type EventRecipients={students:EventRecipient[];schools:{id:string;name:string}[];classes:string[]};
+export type StudentEvent=Omit<ReadingEvent,'storyIds'|'recipients'|'ageConfigs'>&{total:number;completed:number;ongoing:boolean;age?:number|null;assignedStories?:{id:string;title:string;level:ReadingLevel;order:number;completed:boolean}[];assignedLevels?:{level:ReadingLevel;quantity:number}[]};
+export type DistributionCheck={valid:boolean;groups:{age:number;level:ReadingLevel;available:number;selected:number;requested:number}[]};
+export type EventReportRow={age:number|null;level:ReadingLevel;students:number;assigned:number;completed:number;points:number};

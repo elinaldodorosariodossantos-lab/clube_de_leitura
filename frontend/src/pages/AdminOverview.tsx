@@ -1,0 +1,9 @@
+import {formatPoints} from '../services/format';
+import {Users,School,BookOpen,Star,ArrowRight} from 'lucide-react';
+import {useAdminResource} from '../hooks/useAdminResource';
+import {AdminQueryState,AdminRefresh} from '../components/AdminQueryState';
+import type {AdminSummary} from '../types/admin';
+export function AdminOverview(){
+ const {data,loading,error,reload}=useAdminResource<AdminSummary>('/admin/overview');
+ return <><span className="club-tag">Clube da Leitura 2026</span><h1>Visão geral</h1><p>Alunos, escolas e conquistas registrados no clube.</p><AdminRefresh loading={loading} updatedAt={data?.updatedAt} onRefresh={()=>void reload()}/><AdminQueryState loading={loading} error={error} onRetry={()=>void reload()}/>{data&&<><div className="stat-grid admin-stats">{[{Icon:Users,value:data.totalStudents,label:'Total de alunos',hint:'Cada cadastro contado uma vez'},{Icon:School,value:data.totalSchools,label:'Escolas participantes',hint:'Escolas distintas com alunos'},{Icon:BookOpen,value:data.completed,label:'Atividades concluídas',hint:'Conclusões validadas, sem duplicatas'},{Icon:Star,value:data.points,label:'Total de pontos',hint:'Somente resultados válidos'}].map(({Icon,value,label,hint})=><article className="club-card admin-metric" key={label}><Icon/><strong>{label==='Total de pontos'?formatPoints(value):value.toLocaleString('pt-BR')}</strong><span>{label}</span><small>{hint}</small></article>)}</div><section className="club-card admin-overview-callout"><div><h2>Conheça os leitores do clube</h2><p>{data.totalStudents?`${data.totalStudents.toLocaleString('pt-BR')} alunos cadastrados. Consulte a participação e o progresso de cada um.`:'Ainda não há alunos cadastrados. Os primeiros participantes aparecerão aqui após o cadastro.'}</p></div><a className="club-button" href="#/admin/alunos">Ver alunos cadastrados<ArrowRight size={17}/></a></section></>}</>;
+}

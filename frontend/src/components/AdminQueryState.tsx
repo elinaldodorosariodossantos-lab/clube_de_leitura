@@ -1,0 +1,4 @@
+import {RefreshCw} from 'lucide-react';
+import {Notice} from './PortalUI';
+export function AdminQueryState({loading,error,onRetry}:{loading:boolean;error:string;onRetry:()=>void}){return <>{error&&<Notice error>{error}<button className="club-button secondary" onClick={onRetry}>Tentar novamente</button></Notice>}{loading&&<Notice>Consultando os dados do Supabase…</Notice>}</>;}
+export function AdminRefresh({loading,updatedAt,onRefresh}:{loading:boolean;updatedAt?:string;onRefresh:()=>void}){return <div className="admin-refresh"><span>{updatedAt?`Atualizado às ${new Date(updatedAt).toLocaleTimeString('pt-BR',{timeZone:'America/Fortaleza'})}`:'Atualização automática a cada 20 segundos'}</span><button className="club-button secondary" disabled={loading} onClick={onRefresh}><RefreshCw size={15}/>{loading?'Atualizando…':'Atualizar'}</button></div>;}

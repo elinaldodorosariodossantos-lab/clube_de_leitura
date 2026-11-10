@@ -1,0 +1,51 @@
+import {beforeEventSchools} from './fixtures/before-event-schools.mjs';
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {randomUUID} from 'node:crypto';
+import {PGlite} from '../../.qa/postgres/node_modules/@electric-sql/pglite/dist/index.js';
+
+test('alternativas dinâmicas: salvar, corrigir, rejeitar índices inexistentes e preservar snapshots',async()=>{
+ const db=new PGlite(),admin=randomUUID(),student=randomUUID();
+ const identity=async(id,anonymous)=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false),set_config('request.jwt.claims',$2,false)",[id,JSON.stringify({sub:id,is_anonymous:anonymous})]);await db.exec('set role authenticated');};
+ const rpc=async(fn,op,args={})=>(await db.query(`select public.${fn}($1,$2::jsonb) as data`,[op,JSON.stringify(args)])).rows[0].data;
+ try{
+  await db.exec(`create role anon;create role authenticated;create schema auth;create table auth.users(id uuid primary key,is_anonymous boolean default true);
+  create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
+  create function auth.jwt() returns jsonb language sql stable as $$select coalesce(nullif(current_setting('request.jwt.claims',true),''),'{}')::jsonb$$;grant usage on schema auth to anon,authenticated;`);
+  for(const name of ['202610120001_clube.sql','202610140001_portal.sql','202610150001_leitura.sql','202610150002_admin.sql','202610190001_progressao.sql','202610190002_sequencia.sql'])await db.exec(await readFile(new URL('../migrations/'+name,import.meta.url),'utf8'));
+  await db.exec(await readFile(new URL('../instalar-eventos.sql',import.meta.url),'utf8').then(beforeEventSchools));
+  await db.exec(await readFile(new URL('../instalar-eventos.sql',import.meta.url),'utf8').then(beforeEventSchools));
+  await db.query('insert into auth.users values($1,false),($2,true)',[admin,student]);await db.query("insert into public.perfis(id,nome,papel) values($1,'Admin','admin')",[admin]);
+  await identity(admin,false);
+  const draft={id:'dynamic',title:'Alternativas variáveis',author:'Autor',content:'Conteúdo completo.',age:'7 anos',level:'facil',ordering:0,active:true,required:true,questions:[{prompt:'Escolha a última opção',options:['A','B','C','D','E','F'],correct:5},{prompt:'Segunda pergunta obrigatória',options:['Um','Dois','Três'],correct:2}]};
+  await rpc('clube_gestao','story_save',draft);
+  for(const q of [{...draft.questions[0],correct:6},{...draft.questions[0],correct:-1},{prompt:'Inválida',options:['Única'],correct:0}])await assert.rejects(rpc('clube_gestao','story_save',{...draft,questions:[q]}));
+  await db.exec('reset role');await db.exec("update public.textos set ativo=false where id<>'dynamic'");
+  await identity(student,true);const registered=await rpc('clube_portal','register',{name:'Aluno Alternativas',age:7,school:'Escola Local',className:'2º ano'});
+  await db.exec('reset role');await db.query("update public.alunos set data_nascimento=(current_date-interval '7 years')::date where id=$1",[registered.student.id]);await identity(student,true);
+  const entered=await rpc('clube_leitura','enter',{level:'facil'}),attempt=entered.attempt;
+  assert.equal(attempt.activity.questions[0].options.length,6);
+  assert.equal(attempt.activity.questions.length,2,'Todas as perguntas cadastradas são enviadas ao aluno');
+  await rpc('clube_leitura','stage',{id:attempt.id,stage:'questoes'});
+  const questionId=attempt.activity.questions[0].id;
+  await assert.rejects(rpc('clube_leitura','answer',{id:attempt.id,questionId,selected:6}));
+  await rpc('clube_leitura','answer',{id:attempt.id,questionId,selected:5});
+  await assert.rejects(rpc('clube_leitura','finish',{id:attempt.id}),'É obrigatório responder também à segunda pergunta');
+  await rpc('clube_leitura','answer',{id:attempt.id,questionId:attempt.activity.questions[1].id,selected:2});
+  await identity(admin,false);await rpc('clube_gestao','story_save',{...draft,questions:[{prompt:'Nova pergunta',options:['Sim','Não'],correct:1}]});
+  assert.equal((await rpc('clube_gestao','story',{id:draft.id})).questions[0].options.length,2);
+  await identity(student,true);const result=await rpc('clube_leitura','finish',{id:attempt.id});assert.equal(result.result.hits,2);assert.equal(result.result.details[0].options.length,6);assert.equal(result.result.details[0].selected,5);
+  await identity(admin,false);
+  await db.exec('reset role');await db.query("update public.alunos set data_nascimento=(current_date-interval '7 years')::date where id=$1",[registered.student.id]);await identity(admin,false);
+  const dates=(await db.query("select (now()-interval '1 hour')::text as start,(now()+interval '1 day')::text as finish")).rows[0];
+  await rpc('clube_gestao','story_save',draft);
+  const event=await rpc('clube_eventos','save',{requestId:randomUUID(),name:'Evento Alternativas',description:'Leitura dinâmica',level:'facil',minAge:7,maxAge:7,startsAt:dates.start,endsAt:dates.finish,active:true,mode:'sorteio',quantity:1,storyIds:[draft.id]});
+  await rpc('clube_eventos','send',{id:event.id,studentIds:[registered.student.id]});
+  await identity(student,true);const eventAttempt=(await rpc('clube_eventos','enter',{id:event.id})).attempt;await rpc('clube_leitura','stage',{id:eventAttempt.id,stage:'questoes'});
+  await assert.rejects(rpc('clube_leitura','answer',{id:eventAttempt.id,questionId:eventAttempt.activity.questions[0].id,selected:6}));
+  assert.equal(eventAttempt.activity.questions.length,2);
+  await rpc('clube_leitura','answer',{id:eventAttempt.id,questionId:eventAttempt.activity.questions[0].id,selected:5});
+  await rpc('clube_leitura','answer',{id:eventAttempt.id,questionId:eventAttempt.activity.questions[1].id,selected:2});assert.equal((await rpc('clube_leitura','finish',{id:eventAttempt.id})).result.hits,2);
+ }finally{await db.close();}
+});

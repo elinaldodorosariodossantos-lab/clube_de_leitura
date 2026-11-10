@@ -1,0 +1,46 @@
+﻿/* A mesma identidade das conquistas, com fundo claro para ler com conforto. */
+.student-experience:has(.reading-adventure),.student-experience:has(.story-catalog){background:radial-gradient(ellipse at 5% 12%,#fff7c9 0,transparent 34%),linear-gradient(145deg,#78d9ff,#def8ff 65%,#ecf6ff)}
+.reading-adventure{position:relative;max-width:1200px;margin:0 auto;padding:20px 26px 28px;border:2px solid #ffffffbc;border-radius:28px;background:#f5fbffe8;box-shadow:0 8px 0 #2188d21a,0 18px 45px #155ac215}
+.reading-adventure .reading-back,.story-catalog .reading-back{color:#144b9c;font-weight:800}
+.reading-adventure .reading-heading{margin-top:12px}
+.reading-adventure .reading-heading .club-tag{background:linear-gradient(#fff19c,#ffcf35);border:1px solid #eac144;color:#69440a;border-radius:20px;padding:7px 16px;font-weight:900}
+.reading-adventure .reading-heading>span:last-child{background:#e1f1ff;color:#23518a;padding:7px 12px;border-radius:18px;font-weight:700}
+.adventure-stages{display:flex;gap:12px;margin:18px 0;align-items:center;flex-wrap:wrap}
+.adventure-stages>span{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;color:#536c89;border:1px solid #c8ddef;background:#edf5fc;padding:9px 14px;border-radius:30px}
+.adventure-stages .current{background:linear-gradient(#168aff,#0755ce);border-color:#389cff;color:white;box-shadow:0 3px 0 #0643a52b}
+.adventure-stages .done{background:#e5f8e6;border-color:#a8dfb0;color:#15713b}
+.club-app .reading-adventure>h1{color:#0a357f;font-size:clamp(25px,3vw,38px)!important;margin:12px 0 18px;line-height:1.2}
+.reading-adventure .reading-byline{color:#486387;margin:0 0 16px}
+.reading-adventure .digital-book-page{background:#fffef8;border:2px solid #e9dba9;border-radius:24px;box-shadow:inset 6px 0 0 #fff0be,0 5px 0 #c9ddf2;padding:clamp(22px,4vw,42px)}
+.reading-adventure .digital-book-text{color:#233f60}
+.reading-adventure .digital-book-text p{line-height:1.85}
+.reading-adventure .digital-book-navigation{background:#e8f3ff;border:1px solid #c3def9;border-radius:22px;padding:12px 16px}
+.reading-adventure .digital-book-navigation>span{color:#13478e;font-weight:900}
+.club-app .reading-adventure .club-button,.club-app .story-catalog .club-button{background:linear-gradient(#1688ff,#0754d0);color:#fff;border:2px solid #71b9ff;border-radius:24px;box-shadow:0 4px 0 #0c46972b;font-weight:900;min-height:46px}
+.club-app .reading-adventure .club-button.secondary{background:#fff;color:#16498b;border-color:#bdd8f3;box-shadow:0 3px 0 #cbdff1}
+.club-app .reading-adventure .club-button:disabled{opacity:.6;cursor:wait}
+.club-app .reading-adventure .question-navigation[aria-busy="false"] .club-button:disabled{opacity:1;cursor:not-allowed}
+.reading-adventure .digital-book>.muted{color:#486387;text-align:center}
+.club-app .reading-adventure .reading-question{max-width:900px;margin:0 auto;background:linear-gradient(140deg,#fff,#f0f6ff);border:2px solid #a8caff;border-radius:26px;box-shadow:0 6px 0 #328cda22;padding:clamp(20px,3vw,32px)}
+.reading-adventure .reading-question h2{color:#0747af;font-size:clamp(20px,2.3vw,28px);margin:0 0 14px}
+.reading-adventure .reading-question progress{height:15px;border:1px solid #b9d0ee;background:#e3edfa;margin-bottom:18px}
+.reading-adventure .reading-question progress::-webkit-progress-bar{background:#e3edfa}
+.reading-adventure .reading-question progress::-webkit-progress-value{background:linear-gradient(#50e43f,#0cb633);border-radius:20px}
+.reading-adventure .reading-question progress::-moz-progress-bar{background:#13bd37}
+.reading-adventure .reading-question legend{color:#173c72;font-size:clamp(19px,2.2vw,25px);line-height:1.45;margin-bottom:12px}
+.reading-adventure .reading-option{position:relative;border:2px solid #c5dbf4;background:white;border-radius:18px;padding:12px 16px;gap:12px;min-height:62px;box-shadow:0 3px 0 #d5e4f4;transition:background .15s,border-color .15s,transform .15s}
+.reading-adventure .adventure-answer-letter{display:grid;place-items:center;flex:0 0 34px;height:34px;border:1px solid #b5d5f9;background:#e8f3ff;color:#1253ab;border-radius:11px;font-weight:900;font-size:17px}
+.reading-adventure .reading-option>span:last-child{overflow-wrap:anywhere;color:#1c3d6b;font-weight:600}
+.reading-adventure .reading-option:hover{background:#eff7ff;border-color:#78b6ff;transform:translateY(-1px)}
+.reading-adventure .reading-option:has(input:checked){background:#fff7cf;border-color:#e3aa10;box-shadow:0 3px 0 #e6bd4e}
+.reading-adventure .reading-option:has(input:checked) .adventure-answer-letter{background:#ffd954;border-color:#ddac22;color:#654400}
+.reading-adventure .reading-option:has(input:disabled){cursor:wait;transform:none}
+.reading-adventure .reading-question>.muted{color:#446087;font-size:13px}
+.reading-adventure .reading-result{border:2px solid #a8caff;background:#fff;border-radius:26px;box-shadow:0 6px 0 #328cda22}
+.reading-adventure .reading-result-totals{border:1px solid #f1d378;background:linear-gradient(#fff9dc,#fff1b6);border-radius:18px}
+.student-experience .story-catalog{background:#f8fcffe8;padding:24px;border-radius:28px;border:2px solid #fff}
+.student-experience .story-card{border:2px solid #b5d2f7;border-radius:24px;overflow:hidden;background:#fff;box-shadow:0 5px 0 #388cda20}
+.student-experience .story-cover{background:linear-gradient(135deg,#d4f1ff,#a7d7ff);color:#1263ca}
+.student-experience .story-state{color:#17579f;font-weight:800}
+@media(max-width:600px){.reading-adventure{padding:14px 12px 20px;border-radius:22px}.adventure-stages{gap:6px;margin:14px 0}.adventure-stages>span{font-size:10px;padding:7px 9px;gap:5px}.adventure-stages svg{width:15px;height:15px}.reading-adventure .reading-heading{gap:8px;flex-wrap:wrap}.reading-adventure .reading-heading>span:last-child{font-size:10px}.reading-adventure .digital-book-navigation{padding:10px}.reading-adventure .reading-option{padding:11px 10px;gap:8px}.reading-adventure .adventure-answer-letter{flex-basis:28px;height:30px;font-size:15px}.reading-adventure .reading-actions{gap:10px}.student-experience .story-catalog{padding:16px}.reading-adventure .digital-book-text p{font-size:18px}}
+@media(prefers-reduced-motion:reduce){.reading-adventure .reading-option{transition:none}.reading-adventure .reading-option:hover{transform:none}}

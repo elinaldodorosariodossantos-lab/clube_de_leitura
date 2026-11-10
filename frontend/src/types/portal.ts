@@ -1,0 +1,20 @@
+import type {BookPage} from './management';
+export type StudentTab='home'|'journey'|'progress'|'profile';
+export type School={id:string;name:string};
+export type Student={id:string;name:string;age:number|null;school:string|null;className:string;createdAt:string;status:string;completed:number;points:number;ongoing:boolean;journey:{id:string;cycle:number;status:string;textId:string|null;level:string|null}|null};
+export type PortalSession={student:Student|null;admin:boolean};
+export type AdminData={totalStudents:number;totalSchools:number;completed:number;points:number;students:Student[];schools:School[]};
+export type ReadingLevel='facil'|'medio'|'dificil';
+export type ReadingQuestion={id:number;prompt:string;options:string[]};
+export type ReadingEntry={attempt:ReadingAttempt|null;empty:boolean;levelComplete:boolean;journeyComplete:boolean};
+export type RewardRanking={position:number;name:string;school:string|null;points:number;self:boolean};
+export type LevelScore={scoreVersion?:number;version?:number;maxPoints?:number;points:number;performance?:number;stories?:number;completedStories?:number;questions?:number;hits?:number;wrong?:number;readingPoints?:number;questionPoints?:number;questionPointValue?:number;lostPoints?:number;coins?:number;coinBalance?:number;pointUnits?:number;pointDivisor?:number;ranking?:RewardRanking[]};
+export type LevelAchievementData=LevelScore&{id:string;level:ReadingLevel;nextLevel:ReadingLevel|null;eventId:string|null;points:number;percentage:number};
+export type ReadingAttempt={storyScore?:LevelScore;journeyCompletionId?:string|null;levelScore?:LevelScore;achievementId?:string|null;pageIndex?:number;id:string;journeyId:string;eventId?:string;level:ReadingLevel;stage:'leitura'|'questoes'|'resultado';index:number;status:'started'|'completed';answers:Record<string,number>;activity:{pages?:BookPage[];id:string;title:string;content:string;author?:string;cover?:string|null;minutes?:number|null;age:string;level:ReadingLevel;questions:ReadingQuestion[]};result:null|{points:number;hits:number;percentage:number;details:(ReadingQuestion&{selected:number;correct:number;points:number})[]}};
+export type LevelProgress={id:ReadingLevel;available:number;completed:number;required:number;requiredCompleted:number;complete:boolean;unlocked:boolean};
+export type ReadingStory={id:string;title:string;summary:string|null;cover:string|null;minutes:number|null;required:boolean;status:'not_started'|'started'|'completed';attemptId:string|null};
+export type ReadingState={scoresByLevel?:{level:ReadingLevel;points:number;readingPoints:number|null;questionPoints:number|null}[];journeyCompletionId?:string|null;journeyCompletions?:JourneyCompletionLink[];coinBalance?:number;achievements?:LevelAchievementData[];achievementId?:string|null;ageAccessError?:string|null;student:Student;journey:{id:string;cycle:number;status:'preparacao'|'em_andamento'|'concluida'};levels:LevelProgress[];active:ReadingAttempt|null;history:{id:string;title:string;level:ReadingLevel;cycle:number|null;points:number;completedAt:string}[]};
+
+export type JourneyCompletionLevel={readingPoints?:number;questionPoints?:number;level:ReadingLevel;points:number;maxPoints:number;coins:number;performance:number;stories:number;questions:number;hits:number;wrong:number;legacy:boolean};
+export type JourneyCompletionData={id:string;eventId:string|null;name:string;school:string|null;eventName:string|null;completedAt:string;issuer:{institution:string;identification:string};levels:JourneyCompletionLevel[];stories:number;questions:number;hits:number;wrong:number;points:number;maxPoints:number;coins:number;coinBalance:number;performance:number;legacy:boolean;ranking:RewardRanking[]};
+export type JourneyCompletionLink={id:string;eventName:string|null;completedAt:string;points:number};

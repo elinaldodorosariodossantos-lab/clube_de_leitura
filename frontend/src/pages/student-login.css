@@ -1,0 +1,13 @@
+.club-app .student-login{min-height:100vh;min-height:100dvh;background:#f2f4f3;display:grid;place-items:center;padding:24px 16px}
+.student-login-card{width:100%;max-width:440px;background:#fff;border-radius:18px;border-top:5px solid #28965b;padding:38px 34px 34px;box-shadow:0 12px 40px #19392b0d}
+.club-app .student-login-card h1{font-size:30px;text-align:center;margin:0 0 12px;letter-spacing:-.5px}
+.club-app .student-login-card>p{text-align:center;font-size:15px;line-height:1.65;margin:0 0 28px;color:#63716c}
+.club-app .student-login-card label{font-size:14px;margin:0 0 9px;color:#253e31}
+.club-app .student-login-card input{min-height:54px;font-size:20px;letter-spacing:3px;border-color:#d5ded8;border-radius:10px}
+.club-app .student-login-card input::placeholder{font-size:16px;letter-spacing:1px}
+.club-app .student-login-card button{width:100%;min-height:52px;margin-top:22px;background:#24834f;color:#fff;border-radius:10px;font-size:16px}
+.club-app .student-login-card button:hover{background:#1b6b3f}
+.club-app .student-login-card button:disabled{cursor:not-allowed;opacity:.6}
+.club-app .student-login-card :is(input,button):focus-visible{outline-color:#28965b}
+.club-app .student-login-error{font-size:14px;color:#a13229;background:#fff3f1;border-radius:8px;padding:12px;margin:14px 0 0;line-height:1.5;text-align:left}
+@media(max-width:480px){.student-login-card{padding:30px 24px}.club-app .student-login-card h1{font-size:27px}}

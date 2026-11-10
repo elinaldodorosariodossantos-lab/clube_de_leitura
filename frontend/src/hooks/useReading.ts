@@ -1,0 +1,18 @@
+import {useCallback,useEffect,useRef,useState} from 'react';
+import {portalApi} from '../services/portal';
+import type {ReadingAttempt,ReadingEntry,ReadingLevel,ReadingState} from '../types/portal';
+export function useReading(studentId:string,attemptId?:string){
+ const [state,setState]=useState<ReadingState>(),[attempt,setAttempt]=useState<ReadingAttempt>(),[loading,setLoading]=useState(true),[busy,setBusy]=useState(false),[error,setError]=useState('');
+ const running=useRef(false),identity=useRef(studentId),active=useRef(true),stateRequest=useRef(0),attemptRequest=useRef(0),currentAttempt=useRef(attemptId);
+ identity.current=studentId;currentAttempt.current=attemptId;
+ const refresh=useCallback(async()=>{const request=++stateRequest.current;const data=await portalApi<ReadingState>('/reading/state');if(active.current&&identity.current===studentId&&request===stateRequest.current)setState(data);return data;},[studentId]);
+ useEffect(()=>{active.current=true;setLoading(true);setState(undefined);setError('');const id=studentId;void refresh().catch(e=>{if(active.current&&identity.current===id)setError(e.message);}).finally(()=>{if(active.current&&identity.current===id)setLoading(false);});return()=>{active.current=false;stateRequest.current++;attemptRequest.current++;};},[studentId,refresh]);
+ useEffect(()=>{const sync=()=>{if(document.visibilityState==='hidden'||running.current)return;void refresh().catch(e=>{if(active.current&&identity.current===studentId)setError(e.message);});};window.addEventListener('focus',sync);const timer=window.setInterval(sync,30000);return()=>{window.removeEventListener('focus',sync);window.clearInterval(timer);};},[studentId,refresh]);
+ useEffect(()=>{const request=++attemptRequest.current;setAttempt(undefined);if(!attemptId)return;setError('');void portalApi<ReadingAttempt>('/reading/attempts/'+attemptId).then(a=>{if(active.current&&identity.current===studentId&&request===attemptRequest.current)setAttempt(a);}).catch(e=>{if(active.current&&identity.current===studentId&&request===attemptRequest.current)setError(e.message);});},[attemptId,studentId]);
+ async function act<T>(fn:()=>Promise<T>):Promise<T|undefined>{if(running.current)return;running.current=true;stateRequest.current++;attemptRequest.current++;setBusy(true);setError('');try{const value=await fn();return active.current&&identity.current===studentId?value:undefined;}catch(e){if(active.current)setError((e as Error).message);}finally{running.current=false;if(active.current)setBusy(false);}}
+ async function update(operation:string,body:unknown={}){if(!attempt)return;return act(async()=>{const a=await portalApi<ReadingAttempt>(`/reading/attempts/${attempt.id}/${operation}`,body);if(active.current&&currentAttempt.current===a.id)setAttempt(a);if(operation==='finish'){void refresh().catch(e=>{if(active.current)setError(e.message);});}else setState(s=>s?{...s,active:a}:s);return a;});}
+ return {state,attempt,loading,busy,error,refreshState:()=>act(refresh),refresh:()=>act(async()=>{await refresh();if(attemptId){const a=await portalApi<ReadingAttempt>('/reading/attempts/'+attemptId);if(currentAttempt.current===a.id)setAttempt(a);}}),
+  enter:(level:ReadingLevel)=>act(async()=>{const result=await portalApi<ReadingEntry>('/reading/enter',{level});await refresh();return result;}),
+  start:(level:ReadingLevel,storyId?:string)=>act(async()=>{const a=await portalApi<ReadingAttempt>('/reading/start',{level,storyId});setState(s=>s?{...s,active:a}:s);return a;}),
+  page:(pageIndex:number)=>update('page',{pageIndex}),stage:(stage:'leitura'|'questoes')=>update('stage',{stage}),answer:(questionId:number,selected:number)=>update('answers',{questionId,selected}),finish:()=>update('finish')};
+}

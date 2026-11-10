@@ -1,0 +1,30 @@
+{
+    "name": "backend",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "tsc && concurrently -k \"tsc --watch --preserveWatchOutput\" \"node --watch dist/server.js\"",
+        "build": "tsc",
+        "start": "node dist/server.js",
+        "test": "npm run build && node --test dist/*.test.js"
+    },
+    "dependencies": {
+        "@supabase/supabase-js": "^2.57.0",
+        "dotenv": "^16.6.0",
+        "express": "^5.1.0",
+        "pdfkit": "^0.20.2",
+        "qrcode": "^1.5.4",
+        "zod": "^4.0.0"
+    },
+    "devDependencies": {
+        "@types/express": "^5.0.0",
+        "@types/node": "^24.0.0",
+        "@types/pdfkit": "^0.17.7",
+        "@types/pngjs": "^6.0.5",
+        "@types/qrcode": "^1.5.6",
+        "jsqr": "^1.4.0",
+        "pngjs": "^5.0.0",
+        "tsx": "^4.20.0",
+        "typescript": "^5.9.0"
+    }
+}
