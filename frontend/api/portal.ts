@@ -1,5 +1,5 @@
 import express from 'express';
-import {portal} from '../../../backend/src/portal.js';
+import {portal} from '../../backend/src/portal.js';
 
 // Reutiliza a API autenticada no mesmo domínio do frontend.
 const app=express();

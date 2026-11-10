@@ -3,6 +3,9 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "functions": {
-    "api/portal/[...path].ts": {"maxDuration": 60}
-  }
+    "api/portal.ts": {"maxDuration": 60}
+  },
+  "rewrites": [
+    {"source": "/api/portal/:path*", "destination": "/api/portal"}
+  ]
 }

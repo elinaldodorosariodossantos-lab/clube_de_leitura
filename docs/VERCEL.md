@@ -1,7 +1,7 @@
 # Publicação na Vercel
 
 Use `frontend` como Root Directory, Vite como framework, `npm run build` como build e `dist` como saída.
-Nas configurações de build, habilite a inclusão dos arquivos fora do Root Directory: a função em `frontend/api/portal/[...path].ts` reutiliza `backend/src`.
+Nas configurações de build, habilite a inclusão dos arquivos fora do Root Directory: a função em `frontend/api/portal.ts` reutiliza `backend/src`.
 Instale as dependências de todos os workspaces (comando de instalação: `cd .. && npm ci`).
 
 Em Settings > Environment Variables, configure para Production:
