@@ -1,5 +1,5 @@
 import type {School} from './portal';
-export type AdminTab='overview'|'students'|'events'|'stories'|'schools'|'reports'|'settings';
+export type AdminTab='overview'|'students'|'events'|'stories'|'schools'|'reports'|'access'|'settings';
 export type AdminSummary={totalStudents:number;totalSchools:number;completed:number;points:number;updatedAt:string};
 export type AdminStudent={id:string;name:string;age:number|null;school:string|null;schoolId:string|null;className:string;createdAt:string;status:string;completed:number;points:number;birthDate?:string|null;guardian?:string|null};
 export type AdminStudentsData={students:AdminStudent[];total:number;page:number;pageSize:number;schools:School[];updatedAt:string};

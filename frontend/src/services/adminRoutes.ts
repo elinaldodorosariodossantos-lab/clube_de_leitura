@@ -1,5 +1,5 @@
 import type {AdminTab} from '../types/admin';
-export const adminPaths:Record<AdminTab,string>={overview:'admin/visao-geral',students:'admin/alunos',events:'admin/eventos',stories:'admin/historias',schools:'admin/escolas',reports:'admin/relatorios',settings:'admin/configuracoes'};
+export const adminPaths:Record<AdminTab,string>={overview:'admin/visao-geral',students:'admin/alunos',events:'admin/eventos',stories:'admin/historias',schools:'admin/escolas',reports:'admin/relatorios',access:'admin/acessos',settings:'admin/configuracoes'};
 export function parseAdminRoute(route:string):{tab:AdminTab;studentId?:string;schoolId?:string;classId?:string;schoolSection?:'list'|'classes'|'dashboard';notFound?:boolean}{
  if(route==='admin'||route==='admin/entrar')return {tab:'overview'};
  for(const [tab,path] of Object.entries(adminPaths))if(route===path)return {tab:tab as AdminTab};

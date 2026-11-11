@@ -2,6 +2,7 @@ import express from 'express';
 import {z} from 'zod';
 import {management} from './management.js';
 import {schools} from './schools.js';
+import {adminAccess} from './admin-access.js';
 export const administration=express.Router();
 administration.use((_req,res,next)=>{if(!res.locals.user){res.status(401).json({error:'Entre com sua conta administrativa.'});return;}next();});
 async function rpc(res:express.Response,op:string,args:unknown={}){
@@ -12,6 +13,7 @@ async function rpc(res:express.Response,op:string,args:unknown={}){
 }
 administration.use('/manage',management);
 administration.use('/schools',schools);
+administration.use('/access',adminAccess);
 const filters=z.object({search:z.string().trim().max(120).default(''),schoolId:z.union([z.string().uuid(),z.literal('')]).default(''),sort:z.enum(['name_asc','name_desc','points_desc','points_asc']).default('name_asc'),page:z.coerce.number().int().min(1).max(1000000).default(1),pageSize:z.coerce.number().int().min(1).max(100).default(20)});
 administration.get('/overview',async(_req,res)=>res.json(await rpc(res,'overview')));
 administration.get('/students',async(req,res)=>{const parsed=filters.safeParse(req.query);if(!parsed.success){res.status(400).json({error:'Confira os filtros informados.'});return;}res.json(await rpc(res,'students',parsed.data));});
