@@ -1,0 +1,9 @@
+{
+  "imports": {
+    "express": "npm:express@5.1.0",
+    "@supabase/supabase-js": "npm:@supabase/supabase-js@2.57.0",
+    "zod": "npm:zod@4.0.0",
+    "pdfkit": "npm:pdfkit@0.20.2",
+    "qrcode": "npm:qrcode@1.5.4"
+  }
+}

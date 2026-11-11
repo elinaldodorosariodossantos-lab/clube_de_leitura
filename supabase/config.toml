@@ -1,0 +1,3 @@
+[functions.portal]
+# Login público; as rotas verificam a sessão e os RPCs verificam a autorização.
+verify_jwt = false

@@ -1,0 +1,36 @@
+// Gerado por backend/scripts/prepare-edge.mjs; edite backend/src.
+import process from "node:process";
+import {Buffer} from "node:buffer";
+import express from 'express';
+import { z } from 'zod';
+export const events = express.Router();
+export const schoolIdsSchema = z.array(z.string().uuid()).max(10000).refine(ids => new Set(ids).size === ids.length);
+const uuid = z.string().uuid(), level = z.enum(['facil', 'medio', 'dificil']);
+export const ageConfigsSchema = z.array(z.object({ age: z.number().int().min(4).max(19), levels: z.array(z.object({ level, quantity: z.number().int().nonnegative(), storyIds: z.array(z.string().min(1).max(200)).default([]) }).refine(v => new Set(v.storyIds).size === v.storyIds.length)).min(1).max(3) }).refine(v => new Set(v.levels.map(l => l.level)).size === v.levels.length)).min(1).max(16).refine(v => new Set(v.map(c => c.age)).size === v.length);
+export const eventSchema = z.object({ name: z.string().trim().min(2).max(160), description: z.string().trim().min(1).max(4000), cover: z.union([z.url().refine(v => v.startsWith('https://')), z.literal('')]).default(''), level, minAge: z.number().int().min(4).max(19), maxAge: z.number().int().min(4).max(19), startsAt: z.iso.datetime({ offset: true }), endsAt: z.iso.datetime({ offset: true }), active: z.boolean(), mode: z.enum(['ordem', 'sorteio']), quantity: z.number().int().positive(), storyIds: z.array(z.string().min(1).max(200)).default([]), automatic: z.boolean().optional(), requestId: uuid.optional(), confirmChanges: z.boolean().optional(), ageConfigs: ageConfigsSchema.optional(), schoolIds: schoolIdsSchema }).refine(v => v.maxAge >= v.minAge && Date.parse(v.endsAt) > Date.parse(v.startsAt) && new Set(v.storyIds).size === v.storyIds.length && (!!v.ageConfigs || v.quantity <= v.storyIds.length), { message: 'Confira a faixa etária, as datas e a quantidade de histórias.' });
+const filters = z.object({ search: z.string().trim().max(120).default(''), schoolId: z.union([uuid, z.literal('')]).default(''), className: z.string().max(60).default(''), age: z.union([z.coerce.number().int().min(4).max(19), z.literal('')]).default(''), eligibleOnly: z.enum(['true', 'false']).default('true') });
+function parse(schema, value) { const result = schema.safeParse(value); if (!result.success)
+    throw Object.assign(new Error('Confira os campos obrigatórios, a faixa etária, as datas e a quantidade de histórias.'), { status: 400 }); return result.data; }
+async function rpc(res, op, args = {}) { const { data, error } = await res.locals.client.rpc('clube_eventos', { op, args }); if (error)
+    throw Object.assign(new Error(error.code === 'PGRST202' ? 'O módulo de eventos precisa da migração 202610200001_eventos.sql no Supabase.' : error.code === '42501' ? 'Acesso não autorizado ou evento indisponível neste período.' : error.code === '22023' ? error.message : error.code === 'P0002' ? 'Evento não encontrado.' : 'Não foi possível concluir a operação do evento. Tente novamente.'), { status: error.code === 'PGRST202' ? 503 : error.code === '42501' ? 403 : error.code === '22023' ? 400 : error.code === 'P0002' ? 404 : 503 }); return data; }
+events.use((_req, res, next) => { if (!res.locals.user) {
+    res.status(401).json({ error: 'Entre para acessar os eventos.' });
+    return;
+} res.setHeader('Cache-Control', 'no-store'); next(); });
+events.get('/mine', async (_req, res) => res.json(await rpc(res, 'mine')));
+events.post('/:id/enter', async (req, res) => res.json(await rpc(res, 'enter', { id: parse(uuid, req.params.id) })));
+events.get('/admin/schools', async (_req, res) => res.json(await rpc(res, 'school_options')));
+events.put('/admin/:id/schools', async (req, res) => res.json(await rpc(res, 'schools_save', { id: parse(uuid, req.params.id), ...parse(z.object({ schoolIds: schoolIdsSchema }), req.body) })));
+events.get('/admin/stories', async (req, res) => res.json(await rpc(res, 'eligible_stories', parse(z.object({ level, minAge: z.coerce.number().int().min(4).max(19), maxAge: z.coerce.number().int().min(4).max(19) }), req.query))));
+events.get('/admin', async (req, res) => res.json(await rpc(res, 'list', parse(z.object({ search: z.string().max(120).default(''), level: z.union([level, z.literal('')]).default(''), age: z.union([z.coerce.number().int().min(4).max(19), z.literal('')]).default(''), status: z.enum(['', 'ativo', 'inativo', 'programado', 'encerrado']).default('') }), req.query))));
+async function ageRpc(res, op, args) { const ready = await res.locals.client.rpc('clube_eventos', { op: 'age_config_ready', args: {} }); if (ready.error || ready.data !== true)
+    throw Object.assign(new Error('Aplique a migração 202610230001_eventos_idades.sql para configurar idades e níveis.'), { status: 503 }); return rpc(res, op, args); }
+events.get('/admin/:id/distribution-check', async (req, res) => res.json(await ageRpc(res, 'distribution_check', { id: parse(uuid, req.params.id) })));
+events.get('/admin/:id/report', async (req, res) => res.json(await ageRpc(res, 'report', { id: parse(uuid, req.params.id) })));
+events.post('/admin', async (req, res) => res.status(201).json(await (req.body.ageConfigs ? ageRpc : rpc)(res, 'save', parse(eventSchema.safeExtend({ requestId: uuid }), req.body))));
+events.get('/admin/:id', async (req, res) => res.json(await rpc(res, 'get', { id: parse(uuid, req.params.id) })));
+events.put('/admin/:id', async (req, res) => res.json(await (req.body.ageConfigs ? ageRpc : rpc)(res, 'save', { ...parse(eventSchema, req.body), id: parse(uuid, req.params.id) })));
+events.post('/admin/:id/status', async (req, res) => res.json(await rpc(res, 'status', { id: parse(uuid, req.params.id), ...parse(z.object({ active: z.boolean() }), req.body) })));
+events.post('/admin/:id/delete', async (req, res) => res.json(await rpc(res, 'delete', { id: parse(uuid, req.params.id) })));
+events.get('/admin/:id/recipients', async (req, res) => res.json(await rpc(res, 'recipients', { ...parse(filters, req.query), id: parse(uuid, req.params.id) })));
+events.post('/admin/:id/send', async (req, res) => res.json(await rpc(res, 'send', { ...parse(z.object({ studentIds: z.array(uuid).min(1).max(10000) }), req.body), id: parse(uuid, req.params.id) })));

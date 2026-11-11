@@ -3,10 +3,7 @@
   "installCommand": "cd .. && npm ci",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "functions": {
-    "api/portal.ts": {"maxDuration": 60}
-  },
   "rewrites": [
-    {"source": "/api/portal/:path*", "destination": "/api/portal"}
+    {"source": "/api/portal/:path*", "destination": "https://lbwswawfosddkmhgcoej.supabase.co/functions/v1/portal/:path*"}
   ]
 }
