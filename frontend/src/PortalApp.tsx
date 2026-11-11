@@ -11,7 +11,7 @@ import './portal.css';
 import './reading.css';
 import './admin.css';
 import './student-theme.css';
-function route(){return window.location.hash.replace(/^#\//,'')||(window.location.pathname.replace(/\/$/,'')==='/administrador'?'admin':'');}
+function route(){return window.location.hash.replace(/^#\//,'')||(['/adm','/administrador'].includes(window.location.pathname.replace(/\/$/,''))?'admin':'');}
 const studentPages:Record<string,StudentTab>={leitura:'home',jornada:'journey',progresso:'progress',perfil:'profile'};
 const tabPaths:Record<StudentTab,string>={home:'leitura',journey:'jornada',progress:'progresso',profile:'perfil'};
 export function PortalApp(){

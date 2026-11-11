@@ -2,7 +2,7 @@ type Method='GET'|'POST'|'PUT'|'DELETE';
 let sessionGeneration=0;
 const reads=new Map<string,Promise<unknown>>();
 export function advancePortalSession(){sessionGeneration++;reads.clear();}
-function context(path:string){return path.startsWith('/admin')||path==='/events/admin'||path.startsWith('/events/admin?')||path.startsWith('/events/admin/')||(['/session','/logout'].includes(path)&&typeof window!=='undefined'&&(window.location.hash?window.location.hash.startsWith('#/admin'):window.location.pathname.replace(/\/$/,'')==='/administrador'))?'admin':'student';}
+function context(path:string){return path.startsWith('/admin')||path==='/events/admin'||path.startsWith('/events/admin?')||path.startsWith('/events/admin/')||(['/session','/logout'].includes(path)&&typeof window!=='undefined'&&(window.location.hash?window.location.hash.startsWith('#/admin'):['/adm','/administrador'].includes(window.location.pathname.replace(/\/$/,''))))?'admin':'student';}
 export function portalApi<T>(path:string,body?:unknown,method:Method=body===undefined?'GET':'POST'):Promise<T>{
  if(method!=='GET'){reads.clear();return request<T>(path,body,method).finally(()=>reads.clear());}
  const key=sessionGeneration+'|'+context(path)+'|'+path;
