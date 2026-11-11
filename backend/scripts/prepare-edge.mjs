@@ -11,7 +11,8 @@ async function emit(name){
  for(const item of ts.preProcessFile(code).importedFiles){
   if(item.fileName.startsWith('./'))await emit(item.fileName.slice(2).replace(/\.js$/,'.ts'));
  }
- const result=ts.transpileModule(code,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}});
+ // O ambiente hospedado é somente leitura; fixa a regra de produção sem alterar env.
+ const result=ts.transpileModule(code.replaceAll('process.env.NODE_ENV',"'production'"),{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}});
  await writeFile(new URL(name.replace(/\.ts$/,'.js'),output),'// Gerado por backend/scripts/prepare-edge.mjs; edite backend/src.\nimport process from "node:process";\nimport {Buffer} from "node:buffer";\n'+result.outputText);
 }
 await emit('edge-app.ts');

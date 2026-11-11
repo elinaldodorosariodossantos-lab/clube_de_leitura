@@ -22,9 +22,9 @@ function cookies(req) { const parsed = {}; for (const part of (req.headers.cooki
     }
     catch { /* Cookie inválido não identifica um usuário. */ }
 } return parsed; }
-function save(res, s, context = res.locals.authContext ?? 'student') { const prefix = context === 'admin' ? 'clube_admin' : 'clube'; const options = { httpOnly: true, sameSite: 'strict', secure: process.env.NODE_ENV === 'production', path: '/api/portal' }; res.cookie(prefix + '_access', s.access_token, { ...options, maxAge: 3600000 }); res.cookie(prefix + '_refresh', s.refresh_token, { ...options, maxAge: 7 * 86400000 }); }
+function save(res, s, context = res.locals.authContext ?? 'student') { const prefix = context === 'admin' ? 'clube_admin' : 'clube'; const options = { httpOnly: true, sameSite: 'strict', secure: 'production' === 'production', path: '/api/portal' }; res.cookie(prefix + '_access', s.access_token, { ...options, maxAge: 3600000 }); res.cookie(prefix + '_refresh', s.refresh_token, { ...options, maxAge: 7 * 86400000 }); }
 function clearSession(res, context = res.locals.authContext ?? 'student') { const prefix = context === 'admin' ? 'clube_admin' : 'clube'; for (const name of [prefix + '_access', prefix + '_refresh'])
-    res.clearCookie(name, { path: '/api/portal', httpOnly: true, sameSite: 'strict', secure: process.env.NODE_ENV === 'production' }); }
+    res.clearCookie(name, { path: '/api/portal', httpOnly: true, sameSite: 'strict', secure: 'production' === 'production' }); }
 function temporaryAuthError(error) { const e = error; return !e.status || e.status === 429 || e.status >= 500 || e.name === 'AuthRetryableFetchError'; }
 portal.use((req, res, next) => {
     res.setHeader('Cache-Control', 'no-store');

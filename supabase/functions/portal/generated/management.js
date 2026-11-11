@@ -23,8 +23,8 @@ management.use(async (_req, res, next) => { const { data, error } = await res.lo
     throw Object.assign(new Error('Administrador obrigatório.'), { status: 403 }); next(); });
 function parse(schema, value) { const result = schema.safeParse(value); if (!result.success)
     throw Object.assign(new Error('Confira os campos obrigatórios e os valores informados.'), { status: 400 }); return result.data; }
-function publicBase(req) { const configured = process.env.PUBLIC_APP_URL?.trim() || process.env.APP_ORIGIN?.trim(); if (process.env.NODE_ENV === 'production' && !configured)
-    throw Object.assign(new Error('Configure PUBLIC_APP_URL com a URL de produção.'), { status: 503 }); const url = new URL(configured || `${req.protocol}://${req.get('host')}`); if (process.env.NODE_ENV === 'production' && url.protocol !== 'https:')
+function publicBase(req) { const configured = process.env.PUBLIC_APP_URL?.trim() || process.env.APP_ORIGIN?.trim(); if ('production' === 'production' && !configured)
+    throw Object.assign(new Error('Configure PUBLIC_APP_URL com a URL de produção.'), { status: 503 }); const url = new URL(configured || `${req.protocol}://${req.get('host')}`); if ('production' === 'production' && url.protocol !== 'https:')
     throw Object.assign(new Error('A URL de produção deve usar HTTPS.'), { status: 503 }); url.hash = ''; url.search = ''; return url.href.replace(/\/$/, ''); }
 async function card(req, record) { if (!record)
     throw Object.assign(new Error('Aluno não encontrado.'), { status: 404 }); const { encrypted, ...safe } = record; if (!encrypted)
