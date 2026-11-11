@@ -1,5 +1,5 @@
 import {useState,useRef} from 'react';
-import {School,Search,Eye,FileDown,Pencil,Trash2,Plus,ArrowLeft,X} from 'lucide-react';
+import {School,Search,Eye,FileDown,Pencil,Trash2,Plus,ArrowLeft,ChevronLeft,ChevronRight,X} from 'lucide-react';
 import {useAdminResource} from '../hooks/useAdminResource';
 import {useModalFocus} from '../hooks/useModalFocus';
 import {useUnsavedForm} from '../hooks/useUnsavedForm';
@@ -11,7 +11,7 @@ type ClassRow={id:string;schoolId:string;school:string;name:string;schoolYear:nu
 type SchoolInfo={id:string;name:string;municipality:string|null;classes:{id:string;name:string;schoolYear:number}[]};
 const date=(value:string|null)=>value?new Date(value).toLocaleDateString('pt-BR',{timeZone:'America/Fortaleza'}):'Não informado';
 const api='/admin/schools';
-function Pager({page,total,size,busy,onPage,onSize}:{page:number;total:number;size:number;busy:boolean;onPage:(p:number)=>void;onSize:(s:number)=>void}){return <footer className="admin-pagination school-module-pagination"><label>Por página<select value={size} onChange={e=>onSize(Number(e.target.value))}>{[10,20,50,100].map(v=><option key={v}>{v}</option>)}</select></label><span>{total} registros · Página {page} de {Math.max(1,Math.ceil(total/size))}</span><button disabled={busy||page<=1} onClick={()=>onPage(page-1)}>Anterior</button><button disabled={busy||page*size>=total} onClick={()=>onPage(page+1)}>Próxima</button></footer>;}
+function Pager({page,total,size,busy,onPage,onSize}:{page:number;total:number;size:number;busy:boolean;onPage:(p:number)=>void;onSize:(s:number)=>void}){return <footer className="admin-pagination school-module-pagination"><label><span>Por página</span><select value={size} onChange={e=>onSize(Number(e.target.value))}>{[10,20,50,100].map(v=><option key={v}>{v}</option>)}</select></label><span>{total} registros · Página {page} de {Math.max(1,Math.ceil(total/size))}</span><div className="school-pagination-controls"><button disabled={busy||page<=1} onClick={()=>onPage(page-1)}><ChevronLeft size={18} aria-hidden="true"/>Anterior</button><button disabled={busy||page*size>=total} onClick={()=>onPage(page+1)}>Próxima<ChevronRight size={18} aria-hidden="true"/></button></div></footer>;}
 function ResourceState({loading,error,reload}:{loading:boolean;error:string;reload:()=>Promise<void>}){return <>{loading&&<Notice>Consultando registros…</Notice>}{error&&<Notice error>{error}<button onClick={()=>void reload()}>Tentar novamente</button></Notice>}</>;}
 export function SchoolDirectory({schoolId,classId,classes=false}:{schoolId?:string;classId?:string;classes?:boolean}){if(schoolId)return <SchoolStudents key={schoolId} id={schoolId} initialClass={classId}/>;return classes?<ClassesDirectory/>:<SchoolsDirectory/>;}
 function SchoolsDirectory(){
