@@ -110,3 +110,12 @@
 .club-app .access-card-actions svg{flex-shrink:0;width:18px;height:18px}
 @media(max-width:650px){.club-app .access-modal .access-card-actions{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:380px){.club-app .access-modal .access-card-actions{grid-template-columns:1fr}}
+.club-app .student-action-dialog{width:min(100%,480px);padding:28px;border-radius:20px}
+.student-action-icon{display:grid;place-items:center;width:54px;height:54px;border-radius:15px;background:#edf5ff;color:#1764d8;margin-bottom:18px}
+.student-action-icon.destructive{background:#fff0ef;color:#c73d35}
+.club-app .student-action-dialog h2{margin:0 0 14px;font-size:24px;color:#173d71}
+.student-action-dialog p{font-size:14px;line-height:1.7;overflow-wrap:anywhere}
+.student-action-dialog .student-action-history{padding:13px 15px;border-radius:10px;background:#f2f7fd;color:#526e8c;font-size:13px}
+.student-action-dialog .management-actions{justify-content:flex-end;gap:12px;margin-top:24px}
+.club-app .student-action-dialog .student-action-delete{background:#c73d35;box-shadow:none}
+.club-app .student-action-dialog .student-action-delete:hover{background:#ac3029}
