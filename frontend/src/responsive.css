@@ -1,0 +1,93 @@
+@media screen {
+/* Shared layout limits: keep scrolling inside tables and dialogs. */
+.club-app :is(fieldset,.form-row>*,.admin-filters>*,.management-dialog,.event-panel,.event-wizard-form,.event-wizard-layout>*,.schools-panel,.reading-adventure){min-width:0}
+.club-app :is(input,select,textarea){min-width:0;max-width:100%}
+.club-app fieldset{margin-inline:0}
+.club-app :is(.table-wrap,.schools-table-scroll,.admin-table-scroll,.event-recipients-table){max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+.club-app :is(.management-heading,.schools-heading,.events-heading,.dialog-top,.story-form-heading,.event-age-heading,.event-send-summary,.event-form-actions,.management-actions){flex-wrap:wrap}
+.club-app :is(.management-heading,.schools-heading,.events-heading)>div{min-width:0}
+.club-app :is(.management-heading,.schools-heading,.events-heading) h1{overflow-wrap:anywhere}
+.club-app :is(.management-actions,.event-form-actions) button{white-space:normal}
+.club-app .management-modal{padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));overscroll-behavior:contain}
+.club-app .management-dialog{max-height:calc(100dvh - 32px);max-width:min(800px,100%);overscroll-behavior:contain;scrollbar-gutter:stable}
+.club-app :is(.school-module-table,.management-table) td{overflow-wrap:break-word}
+.club-app .school-module-table td:first-child{max-width:420px;min-width:200px}
+.club-app .school-module-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-width:240px;width:260px;max-width:100%}
+.club-app .school-module-actions>a,.club-app .school-module-actions>button{min-height:40px;margin:0;padding:8px;white-space:nowrap}
+.club-app .school-module-table td:last-child{width:284px}
+.club-app :is(.admin-nav,.student-header,.row-actions,.management-actions) svg{flex-shrink:0}
+.club-app :is(.book-page-editor-heading,.book-page-editor-heading>.book-page-controls){flex-wrap:wrap}
+.club-app :is(.book-pages-heading,.book-page-editor-heading) h3{min-width:0;overflow-wrap:anywhere}
+.club-app :is(.event-card,.reading-history-row,.journey-reader,.level-ranking-person){min-width:0;overflow-wrap:anywhere}
+.club-app .journey-library:before{left:0}
+.club-app .journey-library:after{right:0}
+
+@media(max-width:1100px){
+ .club-app .admin-filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .club-app .admin-filters>.admin-clear{justify-self:start}
+ .club-app .event-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .club-app .admin-shell .admin-content{padding:20px;min-width:0}
+}
+@media(min-width:701px) and (max-width:1000px){
+ .club-app .admin-shell{height:auto;min-height:100dvh;overflow:visible}
+ .club-app .admin-shell .admin-workspace{display:block;overflow:visible}
+ .club-app .admin-shell .admin-content{height:auto;overflow:visible}
+ .club-app .admin-shell .admin-nav{position:static;display:flex;flex-direction:row;align-items:stretch;min-height:0;height:auto;overflow-x:auto;overflow-y:hidden;padding:10px;gap:6px}
+ .club-app .admin-shell .admin-nav a,.club-app .admin-shell .admin-nav button{flex:0 0 auto;white-space:nowrap;min-height:44px;font-size:12px;margin:0}
+ .club-app .admin-shell .admin-nav .admin-sidebar-logout{margin:0 0 0 auto}
+}
+@media(max-width:700px){
+ .club-app .admin-shell .admin-content{padding:20px 14px}
+ .club-app :is(.management-heading,.schools-heading,.events-heading){align-items:stretch;gap:14px}
+ .club-app :is(.management-heading,.schools-heading,.events-heading)>.club-button{width:100%;white-space:normal}
+ .club-app .form-row,.club-app .event-editor .form-row{grid-template-columns:minmax(0,1fr)}
+ .club-app .admin-filters{grid-template-columns:minmax(0,1fr)}
+ .club-app .management-dialog{padding:20px;border-radius:16px}
+ .club-app :is(.management-actions,.event-form-actions){gap:10px}
+ .club-app :is(.management-actions,.event-form-actions)>button{flex:1 1 130px;min-height:44px}
+ .club-app .management-form :is(input,select,textarea){font-size:16px}
+ .club-app .admin-pagination{flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px}
+ .club-app .admin-pagination>span{flex:1 0 100%;text-align:left}
+ .club-app .admin-pagination>button{flex:1;min-height:44px;border:1px solid #cbd9eb;border-radius:9px}
+ .club-app .school-module-pagination>label{flex:0 0 auto}
+ .club-app .school-module-pagination>span{flex:1 1 120px;text-align:right}
+ .club-app .school-module-pagination>.school-pagination-controls{width:100%;justify-content:space-between}
+ .club-app .school-pagination-controls>button{flex:1}
+ .club-app .event-cards{grid-template-columns:minmax(0,1fr)}
+ .club-app :is(.event-send-summary,.event-linked-schools li){flex-wrap:wrap}
+ .club-app .event-send-summary>.club-button{width:100%}
+ .club-app .admin-overview-callout{flex-direction:column;align-items:stretch}
+ .club-app .admin-overview-callout .club-button{white-space:normal}
+ .club-app .story-duration{flex-wrap:wrap;gap:14px}
+ .club-app .story-duration-stepper{margin-left:auto}
+ .club-app .book-page-editor-heading>.book-page-controls{gap:4px}
+ .club-app .event-school-dialog{width:100%;max-height:calc(100dvh - 32px);padding:18px}
+ .club-app .event-school-dialog header,.club-app .event-school-dialog footer{flex-wrap:wrap}
+ .club-app .event-school-dialog footer>button{flex:1;min-height:44px}
+ .club-app .student-header{min-width:0;flex-wrap:wrap}
+ .club-app .student-brand{min-width:0}
+ .club-app .student-experience :is(.welcome-banner,.resume-reading,.reading-heading,.reading-actions){flex-wrap:wrap;gap:12px}
+ .club-app .student-experience :is(.student-wallet,.wallet-amount){max-width:100%}
+ .club-app .student-experience .reading-history-row{flex-wrap:wrap;gap:12px}
+ .club-app :is(.level-achievement,.journey-final,.journey-certificate){max-width:100%;max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain}
+ .club-app :is(.achievement-backdrop,.journey-final-backdrop,.journey-certificate-backdrop){padding:12px}
+ .club-app :is(.journey-final-actions,.certificate-controls){flex-wrap:wrap;gap:10px}
+ .club-app :is(.journey-final-actions,.certificate-controls)>button{flex:1 1 140px;min-height:44px;white-space:normal}
+}
+@media(max-width:380px){
+ .club-app .management-modal{padding:10px}
+ .club-app .management-dialog{padding:16px;max-height:calc(100dvh - 20px)}
+ .club-app :is(.admin-stats,.stat-grid,.schools-stats,.admin-detail-grid){grid-template-columns:minmax(0,1fr)}
+ .club-app .age-quantity-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .club-app .age-quantity-row .age-number{grid-column:1;grid-row:1}
+ .club-app .age-row-actions{grid-column:2;grid-row:1}
+ .club-app .age-quantity-cell{grid-row:auto}
+ .club-app .student-action-dialog .management-actions>button{flex-basis:100%}
+}
+@media(max-height:500px) and (orientation:landscape){
+ .club-app .management-modal{padding:10px}
+ .club-app .management-dialog{max-height:calc(100dvh - 20px);margin-block:0}
+ .club-app :is(.level-achievement,.journey-final,.event-school-dialog){max-height:calc(100dvh - 20px);overflow-y:auto}
+}
+
+}
