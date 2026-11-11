@@ -23,7 +23,22 @@ const list=await school('schools_list'),aurora=list.schools.find(s=>s.name==='Es
  await t.test('pesquisa idade datas e paginacao usam o banco',async()=>{assert.equal((await school('school_students',{schoolId:aurora.id,search:a.name})).total,1);assert.equal((await school('school_students',{schoolId:aurora.id,age:9})).total,0);assert.equal((await school('school_students',{schoolId:aurora.id,period:'today'})).total,2);assert.equal((await school('school_students',{schoolId:aurora.id,pageSize:1})).students.length,1);assert.equal((await school('schools_list',{pageSize:1})).schools.length,1);});
  await t.test('credenciais sao limitadas por escola e turma e nao mudam codigos',async()=>{const all=await school('credentials',{schoolId:aurora.id});assert.deepEqual(new Set(all.students.map(s=>s.id)),new Set([a.id,c.id]));assert.equal((await school('credentials',{schoolId:aurora.id,classId:cls.id})).students.length,1);await db.exec('reset role');assert.deepEqual((await db.query('select aluno_id,codigo_hash from clube_private.acessos order by aluno_id')).rows,before);await asAdmin();});
  await t.test('editar turma mantem alunos e integra os campos legados',async()=>{await school('class_save',{id:cls.id,schoolId:aurora.id,name:'Turma A',schoolYear:2027});const rows=await school('school_students',{schoolId:aurora.id,classId:cls.id});assert.equal(rows.students[0].className,'Turma A');assert.equal(rows.students[0].schoolYear,2027);await assert.rejects(school('class_delete',{id:cls.id}),/possui alunos/);await assert.rejects(school('class_save',{id:cls.id,schoolId:bosque.id,name:'Movida',schoolYear:2027}),/mover/);const empty=await school('class_save',{schoolId:aurora.id,name:'Vazia',schoolYear:2026});await school('class_delete',{id:empty.id});});
- await t.test('escola com vinculos nao e excluida; municipio e atualizado',async()=>{await assert.rejects(school('school_delete',{schoolId:aurora.id}),/vinculados/);await school('school_update',{schoolId:aurora.id,name:'Escola Aurora',municipality:'Sao Luis'});assert.equal((await school('schools_list',{municipality:'Sao Luis'})).total,1);const e=await rpc('clube_gestao','school_save',{name:'Sem vinculos'});await school('school_delete',{schoolId:e.id});});
+ await t.test('municipio e atualizado e escola sem vinculos sai da lista',async()=>{await school('school_update',{schoolId:aurora.id,name:'Escola Aurora',municipality:'Sao Luis'});assert.equal((await school('schools_list',{municipality:'Sao Luis'})).total,1);const e=await rpc('clube_gestao','school_save',{name:'Sem vinculos'});await school('school_delete',{schoolId:e.id});});
  await t.test('cadastros legados continuam sincronizados e RLS bloqueia alunos',async()=>{const d=await student('Escola Aurora','6º ano');await asAdmin();assert.ok((await school('classes_list',{schoolId:aurora.id})).classes.some(v=>v.name==='6º ano'));await identity(d.user);for(const op of ['schools_list','classes_list','credentials','class_save','school_delete'])await assert.rejects(school(op,{schoolId:aurora.id}),e=>e.code==='42501');await assert.rejects(db.exec('select * from public.turmas'));});
+ await t.test('excluir escola com vínculos preserva alunos, turmas e acesso histórico',async()=>{
+  await asAdmin();
+  const rows=await school('school_students',{schoolId:aurora.id});
+  const classes=await school('classes_list',{schoolId:aurora.id});
+  assert.equal((await school('school_delete',{schoolId:aurora.id})).historyPreserved,true);
+  assert.equal((await school('school_delete',{schoolId:aurora.id})).deleted,true);
+  const list=await school('schools_list',{pageSize:1});
+  assert.ok(list.schools.every(s=>s.id!==aurora.id));
+  assert.equal((await school('schools_list',{municipality:'Sao Luis'})).total,0);
+  assert.equal((await school('school_students',{schoolId:aurora.id})).total,rows.total);
+  assert.equal((await school('classes_list',{schoolId:aurora.id})).total,classes.total);
+  await assert.rejects(school('school_update',{schoolId:aurora.id,name:'Reativar'}),/excluída/);
+  await identity(a.user);
+  await assert.rejects(school('school_delete',{schoolId:bosque.id}),e=>e.code==='42501');
+ });
  }finally{await db.close();}
 });
