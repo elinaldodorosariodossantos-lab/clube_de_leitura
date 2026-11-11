@@ -25,6 +25,8 @@ export function ManageStudents({selectedId}:{selectedId?:string}){
 function StudentForm({initial,schools,onClose,onSaved}:{initial:ManagedStudent|null;schools:School[];onClose:()=>void;onSaved:(card?:AccessCard)=>Promise<void>}){
  const [data,setData]=useState({name:initial?.name??'',birthDate:initial?.birthDate??'',schoolYear:String(initial?.schoolYear??new Date().getFullYear()),guardian:initial?.guardian??'',schoolId:initial?.schoolId??'',className:initial?.className??''}),[options,setOptions]=useState(schools),[schoolName,setSchoolName]=useState(''),[dirty,setDirty]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState('');useUnsavedForm(dirty);
  const classOptions=useAdminResource<{classes:{name:string}[]}>('/admin/schools/classes?'+new URLSearchParams({schoolId:data.schoolId,schoolYear:data.schoolYear,pageSize:'100'}),!data.schoolId);
+ const registeredSchools=useAdminResource<School[]>('/admin/manage/schools');
+ useEffect(()=>{if(registeredSchools.data)setOptions(registeredSchools.data);},[registeredSchools.data]);
  const gradeOptions=[...new Set([...Array.from({length:9},(_,i)=>(i+1)+'º ano'),...(classOptions.data?.classes.map(c=>c.name)??[])])];
  useEffect(()=>{if(schools.length)setOptions(previous=>[...previous.filter(s=>!schools.some(v=>v.id===s.id)),...schools]);},[schools]);
  const schoolPanel=useRef<HTMLDetailsElement>(null),schoolSubmission=useRef(false);
