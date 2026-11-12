@@ -1,12 +1,14 @@
-﻿import {useState,type CSSProperties,Fragment} from 'react';
+﻿import {useLayoutEffect,useRef,useState,type CSSProperties,Fragment} from 'react';
 import type {BookPage,BookElement} from '../types/management';
 import {pageElements,pageTemplate} from '../services/book-pages';
 import '../storybook.css';
 
 export const bookLayouts=[{id:'illustration',name:'Imagem acima'},{id:'side',name:'Lado a lado'},{id:'frame',name:'Página emoldurada'}] as const;
 function PageImage({element,compact}:{element:BookElement;compact:boolean}){
+ const image=useRef<HTMLImageElement>(null);
  const [status,setStatus]=useState<'loading'|'ready'|'error'>('loading');
- return <>{status!=='ready'&&<span className="story-image-status" role="status">{status==='error'?'Ilustração indisponível. Você pode continuar a leitura.':'Carregando ilustração…'}</span>}<img src={element.image} alt={compact?'':element.alt??'Ilustração da página'} style={{visibility:status==='ready'?'visible':'hidden'}} onLoad={()=>setStatus('ready')} onError={()=>setStatus('error')}/></>;
+ useLayoutEffect(()=>{const node=image.current;if(node?.complete&&node.naturalWidth>0)setStatus('ready');},[element.image]);
+ return <>{status!=='ready'&&<span className="story-image-status" role="status">{status==='error'?'Ilustração indisponível. Você pode continuar a leitura.':'Carregando ilustração…'}</span>}<img ref={image} src={element.image} alt={compact?'':element.alt??'Ilustração da página'} style={{visibility:status==='ready'?'visible':'hidden'}} onLoad={()=>setStatus('ready')} onError={()=>setStatus('error')}/></>;
 }
 function emphasis(text:string){return text.split(/(\*\*[^*]+\*\*)/g).map((part,i)=>part.startsWith('**')&&part.endsWith('**')?<strong key={i}>{part.slice(2,-2)}</strong>:<Fragment key={i}>{part}</Fragment>);}
 export function BookPageContent({page,compact=false,reading=false}:{page:BookPage;compact?:boolean;reading?:boolean}){

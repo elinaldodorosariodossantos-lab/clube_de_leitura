@@ -211,3 +211,10 @@
 @media(max-width:600px){
  .club-app .storybook-fit-page .story-page-content .story-text p{font-size:clamp(22px,5.8vw,27px);line-height:1.6;letter-spacing:.01em;word-spacing:.025em}
 }
+
+/* Animate the fitted outgoing page, not a differently sized second renderer. */
+.club-app .storybook-turn.turn-saving .storybook-turn-leaf{animation:none;transform:none}
+.club-app .storybook-turn .storybook-sheet-content{height:auto}
+.club-app .storybook-turn .storybook-sheet{height:100%}
+.club-app .storybook-reader{position:relative}
+.club-app .storybook-reader>.storybook-error{position:absolute;z-index:10;left:16px;right:16px;bottom:64px;margin:0;box-shadow:0 3px 12px #8d430d20}
