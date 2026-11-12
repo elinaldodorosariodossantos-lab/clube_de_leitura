@@ -6,7 +6,9 @@ Textos podem ser títulos, subtítulos, parágrafos ou destaques. Use `**palavra
 
 O leitor mostra duas páginas em telas a partir de 960 pixels e uma por vez em telas menores. As setas e o teclado viram páginas com animação; a preferência do dispositivo por movimento reduzido é respeitada. Textos longos permanecem completos, com rolagem dentro da folha.
 
-Páginas ilustradas recebem um fundo suave derivado da própria imagem principal. A ilustração continua nítida e os textos ficam sobre uma superfície clara. O fundo acompanha a troca da imagem automaticamente, inclusive em páginas antigas. Páginas somente de texto mantêm o fundo de papel.
+As folhas usam papel creme com textura discreta, detalhes vegetais nas margens e profundidade na lombada e nas bordas. As imagens originais e os formatos cadastrados são preservados, sem duplicar a ilustração como fundo desfocado. O título, a numeração e os controles de navegação ficam visíveis.
+
+O ícone de expandir junto ao título abre a própria área de leitura em tela cheia. Use o mesmo botão ou Esc para sair. Em navegadores sem suporte à tela cheia nativa, a mesma área é ampliada dentro da janela. Ao concluir a leitura, o modo ampliado termina para apresentar as perguntas normalmente.
 
 As opções ficam no JSON `paginas_livro` já existente. Os campos `id`, `text`, `image` e os modelos legados são mantidos. O backend valida as opções e recompõe `text` e `image` a partir dos elementos para preservar a compatibilidade com o SQL. Não é necessária migração de banco. Snapshots de leituras iniciadas e eventos distribuídos permanecem preservados.
 

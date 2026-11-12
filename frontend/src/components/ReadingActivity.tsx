@@ -1,15 +1,28 @@
 import {useEffect,useRef,useState} from 'react';
-import {ArrowLeft,ArrowRight,CheckCircle2} from 'lucide-react';
+import {ArrowLeft,ArrowRight,CheckCircle2,Maximize,Minimize} from 'lucide-react';
 import type {ReadingAttempt} from '../types/portal';
 import {BookReader} from './BookReader';
 import '../reading-adventure.css';
 export function ReadingActivity({attempt,busy,onPage,onStage,onAnswer,onFinish,onContinue,onBack}:{attempt:ReadingAttempt;busy:boolean;onPage:(pageIndex:number)=>void|Promise<unknown>;onStage:(stage:'leitura'|'questoes')=>void;onAnswer:(questionId:number,selected:number)=>void;onFinish:()=>void;onContinue?:()=>void;onBack:()=>void}){
  const [review,setReview]=useState<{id:string;index:number}>({id:attempt.id,index:attempt.index});
+ const workspace=useRef<HTMLElement>(null),[fullscreen,setFullscreen]=useState(false),[immersive,setImmersive]=useState(false);
+ const expanded=fullscreen||immersive;
+ useEffect(()=>{const sync=()=>setFullscreen(document.fullscreenElement===workspace.current);document.addEventListener('fullscreenchange',sync);return()=>document.removeEventListener('fullscreenchange',sync);},[]);
+ useEffect(()=>{if(!immersive)return;const previous=document.body.style.overflow;document.body.style.overflow='hidden';const close=(event:KeyboardEvent)=>{if(event.key==='Escape')setImmersive(false);};document.addEventListener('keydown',close);return()=>{document.body.style.overflow=previous;document.removeEventListener('keydown',close);};},[immersive]);
+ useEffect(()=>{const frame=requestAnimationFrame(()=>window.dispatchEvent(new Event('resize')));return()=>cancelAnimationFrame(frame);},[expanded]);
+ useEffect(()=>{if(attempt.stage==='leitura')return;setImmersive(false);if(document.fullscreenElement===workspace.current)void document.exitFullscreen().catch(()=>{});},[attempt.stage]);
+ async function toggleFullscreen(){
+  if(immersive){setImmersive(false);return;}
+  if(document.fullscreenElement===workspace.current){await document.exitFullscreen().catch(()=>{});return;}
+  if(workspace.current?.requestFullscreen&&document.fullscreenEnabled){try{await workspace.current.requestFullscreen();return;}catch{/* Unsupported or blocked native fullscreen uses the same reading workspace. */}}
+  setImmersive(true);
+ }
  const questionIndex=Math.min(Math.max(review.id===attempt.id?review.index:attempt.index,0),Math.max(0,attempt.activity.questions.length-1));
  const question=attempt.activity.questions[questionIndex],answered=Object.keys(attempt.answers).length,total=attempt.status==='completed'?(attempt.result?.details.length??attempt.activity.questions.length):attempt.activity.questions.length,heading=useRef<HTMLHeadingElement>(null);
  useEffect(()=>{heading.current?.focus();},[attempt.id,attempt.stage,questionIndex,attempt.pageIndex]);
- return <section className={'reading-workspace reading-adventure'+(attempt.stage==='leitura'?' reading-focused':'')}><button className="reading-back" onClick={onBack}><ArrowLeft size={17}/>Voltar aos níveis</button>
+ return <section ref={workspace} className={'reading-workspace reading-adventure'+(attempt.stage==='leitura'?' reading-focused':'')+(immersive?' reading-immersive':'')}><button className="reading-back" onClick={onBack}><ArrowLeft size={17}/>Voltar aos níveis</button>
  <h1 ref={heading} tabIndex={-1}>{attempt.activity.title}</h1>
+ {attempt.stage==='leitura'&&<><button type="button" className="reading-fullscreen-toggle" aria-label={expanded?'Sair da tela cheia':'Ler em tela cheia'} title={expanded?'Sair da tela cheia':'Ler em tela cheia'} aria-pressed={expanded} onClick={()=>void toggleFullscreen()}>{expanded?<Minimize size={19} aria-hidden="true"/>:<Maximize size={19} aria-hidden="true"/>}</button>{expanded&&<span className="reading-fullscreen-note" role="status">{fullscreen?'Pressione Esc ou toque no ícone para sair da tela cheia.':'Toque no ícone para sair da tela cheia.'}</span>}</>}
  {attempt.stage==='leitura'&&<><BookReader key={attempt.id} pages={attempt.activity.pages??[{id:'legacy',text:attempt.activity.content,image:attempt.activity.cover??''}]} index={attempt.pageIndex??0} busy={busy} onPage={onPage} onComplete={()=>onStage('questoes')}/></>}
  {attempt.stage==='questoes'&&attempt.status!=='completed'&&<div className="club-card reading-question"><progress value={answered} max={total} aria-label="Respostas salvas"/><h2 aria-live="polite">Questão {questionIndex+1} de {total}</h2>{question&&<fieldset disabled={busy}><legend>{question.prompt}</legend>{question.options.map((option,i)=><label key={i} className="reading-option"><input type="radio" name={'reading-'+question.id} checked={attempt.answers[question.id]===i} onChange={()=>onAnswer(question.id,i)}/><span className="adventure-answer-letter" aria-hidden="true">{String.fromCharCode(65+i)}</span><span>{option}</span></label>)}</fieldset>}{(busy||answered===total)&&<p className="muted" role="status">{busy?'Salvando sua resposta…':'Todas as respostas estão salvas. Você pode finalizar a atividade.'}</p>}<nav className="reading-actions question-navigation" aria-busy={busy} aria-label="Navegação das questões">{questionIndex<total-1?<button type="button" className="club-button question-icon-button" aria-label="Próxima questão" title="Próxima questão" disabled={busy} onClick={()=>setReview({id:attempt.id,index:questionIndex+1})}><ArrowRight size={24} aria-hidden="true"/></button>:<button type="button" className="club-button question-icon-button" aria-label={busy?'Finalizando atividade':'Finalizar e ver resultados'} title="Finalizar e ver resultados" disabled={busy||answered!==total} onClick={onFinish}><CheckCircle2 size={24} aria-hidden="true"/></button>}</nav><button type="button" className="club-button secondary" disabled={busy} onClick={()=>onStage('leitura')}>Reler o texto</button></div>}
  {attempt.status==='completed'&&<div className="reading-complete-transition" role="status"><p>Leitura concluída.</p><button type="button" className="club-button" disabled={busy} onClick={onContinue??onBack}>Continuar<ArrowRight size={17}/></button></div>}
