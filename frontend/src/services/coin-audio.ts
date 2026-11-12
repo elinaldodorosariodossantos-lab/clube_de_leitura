@@ -1,20 +1,29 @@
-// Impactos metalicos e coleta arcade, sintetizados localmente.
-export function playCoinReward(ctx:AudioContext){
- if(ctx.state!=='running')return;
- const rate=ctx.sampleRate,duration=1.65,buffer=ctx.createBuffer(1,Math.ceil(rate*duration),rate),samples=buffer.getChannelData(0);
- const strikes=[0,.105,.205,.305,.405,.515,.625,.755,.9,1.04];
- let seed=72819;const noise=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/2147483648-1;};
- strikes.forEach((at,index)=>{const pitch=[1,1.06,.98,1.12,1.04,1.18,1.1,1.25,1.16,1.33][index];const length=.32;
-  for(let i=0;i<rate*length;i++){const t=i/rate,pos=Math.floor(at*rate)+i;if(pos>=samples.length)break;
-   const attack=Math.min(1,t/.0015);
-   // Parciais nao harmonicas: borda e corpo da moeda batendo.
-   const metal=Math.sin(2*Math.PI*2140*pitch*t)*.075*Math.exp(-t*19)+Math.sin(2*Math.PI*3472*pitch*t)*.04*Math.exp(-t*29)+Math.sin(2*Math.PI*5261*pitch*t)*.018*Math.exp(-t*43);
-   // Salto de altura curto, caracteristico de uma moeda coletada em jogos.
-   const base=index===strikes.length-1?1568:1318.51;const split=.028,phase=2*Math.PI*base*pitch*(Math.min(t,split)+1.5*Math.max(0,t-split));
-   const arcade=(Math.sin(phase)+.18*Math.sin(phase*3))*.045*Math.exp(-t*15);
-   const click=noise()*.07*Math.exp(-t*340);
-   samples[pos]+=attack*(metal+arcade+click)*(.85+index*.015)*Math.min(1,(length-t)/.02);
-  }
- });
- const source=ctx.createBufferSource(),gain=ctx.createGain();source.buffer=buffer;gain.gain.value=.8;source.connect(gain);gain.connect(ctx.destination);source.onended=()=>{source.disconnect();gain.disconnect();};source.start();
+// Original recording supplied in som/som de moedas.mpeg (MPEG audio).
+let context:AudioContext|undefined;
+let recording:Promise<ArrayBuffer>|undefined;
+const decoded=new WeakMap<AudioContext,Promise<AudioBuffer>>();
+let lastPlayed=-Infinity;
+let active:AudioBufferSourceNode|undefined;
+function enabled(){try{return localStorage.getItem('clube-coin-sound')!=='off';}catch{return true;}}
+export function prepareCoinReward(ctx:AudioContext){
+ context=ctx;
+ let buffer=decoded.get(ctx);
+ if(!buffer){
+  recording??=fetch('/audio/coin-reward.mp3').then(r=>{if(!r.ok)throw new Error('Áudio indisponível');return r.arrayBuffer();}).catch(e=>{recording=undefined;throw e;});
+  buffer=recording.then(bytes=>ctx.decodeAudioData(bytes.slice(0))).catch(e=>{decoded.delete(ctx);throw e;});
+  decoded.set(ctx,buffer);
+ }
+ return buffer;
+}
+export function stopCoinReward(){active?.stop();active=undefined;}
+export async function playCoinReward(ctx=context){
+ if(!enabled()||!ctx||ctx.state!=='running'||performance.now()-lastPlayed<1800)return;
+ lastPlayed=performance.now();
+ try{
+  const buffer=await prepareCoinReward(ctx);
+  if(!enabled()||ctx.state!=='running'||active)return;
+  const source=ctx.createBufferSource(),gain=ctx.createGain();source.buffer=buffer;gain.gain.value=.8;
+  source.connect(gain);gain.connect(ctx.destination);active=source;
+  source.onended=()=>{source.disconnect();gain.disconnect();if(active===source)active=undefined;};source.start();
+ }catch{/* Sound failure must not interrupt the reward. */}
 }

@@ -1,3 +1,4 @@
+import {playCoinReward} from '../services/coin-audio';
 import {formatPoints as number} from '../services/format';
 import {useEffect,useRef,useState,type CSSProperties} from 'react';
 import {ArrowRight,BookOpen,CheckCircle2,Coins,LogOut,Star,UserRound} from 'lucide-react';
@@ -10,6 +11,7 @@ type Props={celebrate?:boolean;achievement:LevelAchievementData;studentName?:str
 export function LevelAchievement({achievement:a,celebrate=false,studentName,busy,error,message,onContinue,onClose,onLogout}:Props){
  const [displayed,setDisplayed]=useState({points:celebrate?0:a.points,coins:celebrate?0:(a.coins??0)});
  useEffect(()=>{if(!celebrate||window.matchMedia('(prefers-reduced-motion: reduce)').matches){setDisplayed({points:a.points,coins:a.coins??0});return;}let frame=0;const started=performance.now();const tick=(now:number)=>{const progress=Math.min(1,(now-started)/1400),ratio=1-Math.pow(1-progress,3);setDisplayed({points:a.points*ratio,coins:(a.coins??0)*ratio});if(progress<1)frame=requestAnimationFrame(tick);};setDisplayed({points:0,coins:0});frame=requestAnimationFrame(tick);return()=>cancelAnimationFrame(frame);},[a.id,a.points,a.coins,celebrate]);
+ useEffect(()=>{if(celebrate&&(a.coins??0)>0)void playCoinReward();},[a.id,celebrate]);
  const panel=useRef<HTMLElement>(null);
  useModalFocus(()=>{if(!busy)onClose();});
  useEffect(()=>{if(!busy&&panel.current&&!panel.current.contains(document.activeElement))panel.current.querySelector<HTMLButtonElement>('button:not(:disabled)')?.focus();},[busy]);

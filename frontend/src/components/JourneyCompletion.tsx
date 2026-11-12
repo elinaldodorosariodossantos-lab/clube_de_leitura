@@ -1,3 +1,4 @@
+import {playCoinReward} from '../services/coin-audio';
 import {useEffect,useRef,useState} from 'react';
 import {Award,BookOpen,CheckCircle2,Coins,Crown,Home,Printer,Star,Trophy,X,BarChart3,Layers,Target} from 'lucide-react';
 import {WalletCoins} from './WalletCoins';
@@ -21,6 +22,7 @@ export function JourneyCompletion({data:d,celebrate,onHome,onProgress}:{data:Jou
  useEffect(()=>{panel.current?.querySelector<HTMLButtonElement>(certificate?'.certificate-controls button':'button')?.focus();},[certificate]);
  const [earned,setEarned]=useState(celebrate?0:d.coins);
  useEffect(()=>{if(!celebrate||window.matchMedia('(prefers-reduced-motion: reduce)').matches){setEarned(d.coins);return;}let frame=0;const start=performance.now();const tick=(now:number)=>{const p=Math.min(1,(now-start)/1400);setEarned(d.coins*(1-Math.pow(1-p,3)));if(p<1)frame=requestAnimationFrame(tick);};frame=requestAnimationFrame(tick);return()=>cancelAnimationFrame(frame);},[d.id,d.coins,celebrate]);
+ useEffect(()=>{if(celebrate&&(d.coins??0)>0)void playCoinReward();},[d.id,celebrate]);
  const best=[...d.levels].sort((a,b)=>b.performance-a.performance)[0];
  const podium=[...d.ranking].filter(p=>p.position<=3).sort((a,b)=>[2,1,3].indexOf(a.position)-[2,1,3].indexOf(b.position));
  const self=d.ranking.find(p=>p.self);
