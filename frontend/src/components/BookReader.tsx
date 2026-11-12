@@ -14,7 +14,8 @@ export function BookReader({pages,index,busy,onPage,onComplete}:{pages:BookPage[
   const root=book.current,workspace=root?.closest<HTMLElement>('.reading-adventure');if(!root||!workspace)return;
   let frame=0;const fit=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{
    const top=workspace.getBoundingClientRect().top+window.scrollY;
-   workspace.style.setProperty('--reader-available',Math.max(200,(window.visualViewport?.height??window.innerHeight)-top-12)+'px');
+   const bottomGap=workspace.classList.contains('reading-focused')?0:12;
+   workspace.style.setProperty('--reader-available',Math.max(200,(window.visualViewport?.height??window.innerHeight)-top-bottomGap)+'px');
    workspace.classList.add('reader-viewport');
    const paper=root.querySelector<HTMLElement>('.digital-book-page'),text=paper?.querySelector<HTMLElement>('.book-composition-text');
    if(!paper||!text)return;
