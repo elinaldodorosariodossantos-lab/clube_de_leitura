@@ -6,6 +6,8 @@ Textos podem ser títulos, subtítulos, parágrafos ou destaques. Use `**palavra
 
 O leitor mostra duas páginas em telas a partir de 960 pixels e uma por vez em telas menores. As setas e o teclado viram páginas com animação; a preferência do dispositivo por movimento reduzido é respeitada. Textos longos permanecem completos, com rolagem dentro da folha.
 
+Páginas ilustradas recebem um fundo suave derivado da própria imagem principal. A ilustração continua nítida e os textos ficam sobre uma superfície clara. O fundo acompanha a troca da imagem automaticamente, inclusive em páginas antigas. Páginas somente de texto mantêm o fundo de papel.
+
 As opções ficam no JSON `paginas_livro` já existente. Os campos `id`, `text`, `image` e os modelos legados são mantidos. O backend valida as opções e recompõe `text` e `image` a partir dos elementos para preservar a compatibilidade com o SQL. Não é necessária migração de banco. Snapshots de leituras iniciadas e eventos distribuídos permanecem preservados.
 
 A mudança exige o frontend e o backend atualizados juntos; os módulos locais da Edge Function são preparados com `node backend/scripts/prepare-edge.mjs`. **Nenhum commit ou envio é executado automaticamente.**

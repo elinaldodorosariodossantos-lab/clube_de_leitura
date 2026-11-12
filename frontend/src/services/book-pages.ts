@@ -12,6 +12,10 @@ export function withPageElements(page:BookPage,elements:BookElement[]):BookPage{
  return {...page,elements,text:elements.filter(e=>e.type==='text').map(e=>e.text??'').join('\n\n'),image:elements.find(e=>e.type==='image'&&e.image)?.image??''};
 }
 export function pageTemplate(page:BookPage):PageTemplate{return page.template??(page.image&&page.text?'mixed':page.image?'image':'text');}
+export function pageBackgroundImage(page:BookPage):string{
+ if(pageTemplate(page)==='text')return '';
+ return pageElements(page).find(element=>element.type==='image'&&element.image)?.image??'';
+}
 export function pageProblem(page:BookPage):string|null{
  const elements=pageElements(page),images=elements.filter(e=>e.type==='image'&&e.image),text=elements.some(e=>e.type==='text'&&e.text?.trim()),template=pageTemplate(page);
  if(template==='two-images'&&images.length<2)return 'Adicione duas imagens para este modelo.';

@@ -41,6 +41,17 @@
 .club-app .story-page-content.is-miniature :is(p,h2,h3){font-size:11px;line-height:1.4}
 .club-app .story-page-content.is-miniature .story-image{min-height:30px}
 
+/* Each illustration supplies its own soft scenery, including legacy pages. */
+.club-app .story-page-content.page-background-illustration{position:relative;isolation:isolate;padding:clamp(16px,2vw,30px);overflow:hidden}
+.club-app .story-page-background{position:absolute;inset:0;z-index:-1;overflow:hidden;background:#fff8ec;pointer-events:none;border-radius:inherit}
+.club-app .story-page-background>img{display:block;width:100%;height:100%;min-height:100%;max-width:none;max-height:none;object-fit:cover;filter:blur(26px) saturate(.85);opacity:.85;transform:scale(1.12)}
+.club-app .story-page-background:after{content:'';position:absolute;inset:0;background:linear-gradient(130deg,#fffcf087,#fffaf0a6 65%,#ffffff80)}
+.club-app .page-background-illustration>.story-text:not(.text-highlight){position:relative;padding:16px 18px;border-radius:18px;background:#fffdf5ed;box-shadow:0 3px 14px #4f472712}
+.club-app .page-background-illustration>.story-image{background:#ffffff18}
+.club-app .storybook-sheet:has(.page-background-illustration){padding:0 0 28px}
+.club-app .page-preview-paper:has(.page-background-illustration){padding:0}
+.club-app .story-page-content.page-background-illustration.is-miniature{padding:8px}
+
 /* The open book keeps two independent saved pages; small screens show one at a time. */
 .club-app .storybook-reader{min-width:0;width:100%;display:flex;flex-direction:column;gap:14px;margin:0;min-height:0}
 .club-app .storybook-cover{position:relative;isolation:isolate;flex:1;min-height:300px;padding:10px;background:linear-gradient(145deg,#35bdff,#0878c9);border:2px solid #075caa;border-radius:24px;box-shadow:0 5px 0 #075799,0 12px 22px #12588c25}
