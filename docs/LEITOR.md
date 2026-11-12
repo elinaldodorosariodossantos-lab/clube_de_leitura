@@ -4,7 +4,7 @@ Em **Histórias → Cadastrar / Editar**, expanda cada página para escolher seu
 
 Textos podem ser títulos, subtítulos, parágrafos ou destaques. Use `**palavras**` para negrito. Imagens usam o upload e a biblioteca existentes; podem ter descrição acessível, formato, tamanho e ajuste sem cortes ou preenchimento.
 
-O leitor mostra duas páginas em telas a partir de 960 pixels e uma por vez em telas menores. As setas e o teclado viram páginas com animação; a preferência do dispositivo por movimento reduzido é respeitada. Textos longos permanecem completos, com rolagem dentro da folha.
+O leitor mostra uma página por vez em computadores, tablets e celulares. As setas e o teclado viram páginas com animação; a preferência do dispositivo por movimento reduzido é respeitada. Textos longos permanecem completos, com rolagem dentro da folha.
 
 As folhas usam papel creme com textura discreta, detalhes vegetais nas margens e profundidade na lombada e nas bordas. As imagens originais e os formatos cadastrados são preservados, sem duplicar a ilustração como fundo desfocado. O título, a numeração e os controles de navegação ficam visíveis.
 

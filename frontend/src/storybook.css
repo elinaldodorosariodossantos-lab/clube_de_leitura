@@ -41,17 +41,14 @@
 .club-app .story-page-content.is-miniature :is(p,h2,h3){font-size:11px;line-height:1.4}
 .club-app .story-page-content.is-miniature .story-image{min-height:30px}
 
-/* The open book keeps two independent saved pages; small screens show one at a time. */
+/* One saved page occupies the reader on every screen size. */
 .club-app .storybook-reader{min-width:0;width:100%;display:flex;flex-direction:column;gap:14px;margin:0;min-height:0}
 .club-app .storybook-cover{position:relative;isolation:isolate;flex:1;min-height:300px;padding:10px 12px 16px;background:linear-gradient(90deg,#9b581f,#ce8c41 4%,#f0c984 49%,#aa672b 50%,#dfa052 96%,#92501d);border:1px solid #855021;border-radius:25px;box-shadow:0 4px 0 #824819,0 9px 0 #d1a267,0 14px 22px #3d4a5229}
 .club-app .storybook-cover:before{content:'';position:absolute;inset:7px 5px 3px;border-radius:20px;background:repeating-linear-gradient(0deg,#ddbc82 0 1px,#fff0c9 1px 3px,#efd8a9 3px 4px);box-shadow:inset 0 0 10px #8e5d2c4d;pointer-events:none}
 .club-app .storybook-spread{display:grid;grid-template-columns:minmax(0,1fr);height:100%;min-height:0;position:relative;z-index:1}
-.club-app .is-spread .storybook-spread{grid-template-columns:repeat(2,minmax(0,1fr))}
 .club-app .storybook-sheet{position:relative;isolation:isolate;box-sizing:border-box;min-width:0;min-height:0;margin:0;display:flex;flex-direction:column;background:radial-gradient(ellipse at 35% 25%,#fffaf0b3,transparent 65%),linear-gradient(100deg,#f9e8c2,#fff4db 50%,#f4dfb4);border:1px solid #d6b980;border-radius:16px;padding:clamp(18px,2.3vw,36px) clamp(20px,2.6vw,42px) 40px;overflow:hidden;box-shadow:inset 0 0 24px #ae7b2a14}
 .club-app .storybook-sheet:before{content:'';position:absolute;inset:6px;border:1px solid #b7843926;border-radius:inherit;box-shadow:inset 0 0 16px #c7934417;pointer-events:none;z-index:1}
 .club-app .storybook-sheet:after{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;border-radius:inherit;opacity:.055;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)' opacity='.6'/%3E%3C/svg%3E")}
-.club-app .is-spread .storybook-sheet.sheet-left{border-radius:18px 8% 4% 18px / 18px 16px 16px 18px;background:radial-gradient(ellipse at 30% 20%,#fffaf0a6,transparent 70%),linear-gradient(90deg,#fff0cf,#fff5dc 85%,#ddc18b)}
-.club-app .is-spread .storybook-sheet.sheet-right{border-radius:4% 18px 18px 8% / 16px 18px 18px 16px;background:radial-gradient(ellipse at 70% 20%,#fffaf0a6,transparent 70%),linear-gradient(90deg,#ddc18b,#fff5dc 15%,#fff0cf)}
 .club-app .storybook-sheet-content{position:relative;z-index:2;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#ccb98c transparent;flex:1;outline-offset:-3px}
 .club-app .storybook-margin-art{position:absolute;right:6px;bottom:21px;width:34px;height:95px;opacity:.43;pointer-events:none;z-index:1}
 .club-app .sheet-left>.storybook-margin-art{right:auto;left:6px;transform:scaleX(-1)}
@@ -62,14 +59,11 @@
 .club-app .page-preview-paper:has(.template-image .format-full),.club-app .page-preview-paper:has(.template-overlay){padding:0}
 .club-app .page-preview-paper:has(.template-image .format-full) .story-page-content,.club-app .page-preview-paper:has(.template-overlay) .story-page-content{height:100%}
 .club-app .storybook-folio{position:absolute;bottom:11px;left:50%;transform:translateX(-50%);color:#926930;font:800 12px Nunito,sans-serif;z-index:4}
-.club-app .storybook-spine{position:absolute;top:10px;bottom:16px;left:50%;width:28px;transform:translateX(-50%);background:linear-gradient(90deg,#b78d3710,#85602b33 45%,#8a602c66 50%,#fff3d826 65%,transparent);pointer-events:none;z-index:2}
 .club-app .storybook-end{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;flex:1;color:#a5814c;font:800 22px Nunito,sans-serif}
 .club-app .storybook-error{padding:10px;border-radius:8px;background:#fff2df;color:#8d430d;font-size:13px}
 .club-app .storybook-turn{position:absolute;inset:10px 12px 16px;z-index:5;pointer-events:none;perspective:1800px;overflow:hidden;border-radius:14px}
 .club-app .storybook-turn-leaf{position:absolute;inset:0;transform-origin:left center;transform-style:preserve-3d;animation:storybook-forward 650ms cubic-bezier(.35,.05,.25,1) both}
-.club-app .is-spread .storybook-turn-leaf{left:50%}
 .club-app .turn-backward .storybook-turn-leaf{transform-origin:right center;animation-name:storybook-backward}
-.club-app .is-spread .turn-backward .storybook-turn-leaf{left:0;right:50%}
 .club-app .storybook-turn-front,.club-app .storybook-turn-back{position:absolute;inset:0;backface-visibility:hidden;overflow:hidden}
 .club-app .storybook-turn-back{transform:rotateY(180deg)}
 .club-app .storybook-turn :is(.storybook-sheet,.storybook-sheet-content){height:100%;overflow:hidden}
@@ -92,7 +86,6 @@
  .club-app .story-page-content.position-left>.story-image{order:0}
  .club-app .story-page-content.position-right>.story-image{order:2}
  .club-app .storybook-turn{inset:6px 7px 10px}
- .club-app .storybook-spine{top:6px;bottom:10px}
  .club-app .storybook-margin-art{width:24px;height:76px;opacity:.3;right:2px}
  .club-app .sheet-left>.storybook-margin-art{left:2px}
  .club-app .storybook-reader .storybook-navigation{gap:6px}
