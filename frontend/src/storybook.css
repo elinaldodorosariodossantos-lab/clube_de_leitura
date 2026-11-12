@@ -97,13 +97,18 @@
 @media(max-width:380px){.club-app .storybook-complete-label{display:none}.club-app .storybook-reader .storybook-navigation>.storybook-page-counter{font-size:10px;padding:6px}}
 
 /* The same reading workspace enters native fullscreen or an in-page fallback. */
-.club-app .student-experience .reading-adventure.reading-focused.reader-viewport:has(.reading-fullscreen-toggle){grid-template-columns:auto minmax(0,1fr) auto}
+.club-app .student-experience .reading-adventure.reading-focused.reader-viewport:has(.reading-fullscreen-toggle){grid-template-columns:minmax(150px,1fr) minmax(0,4fr) minmax(150px,1fr)}
+.club-app .student-experience .reading-adventure.reading-focused.reader-viewport>h1{width:100%;max-width:100%;text-align:center;justify-self:center}
 .club-app .reading-adventure>.reading-fullscreen-toggle{grid-column:3;grid-row:1;justify-self:end;align-self:center;display:inline-flex;align-items:center;justify-content:center;width:44px;min-width:44px;min-height:44px;margin:0 4px 0 0;padding:6px;border:1px solid #b6d8f3;border-radius:12px;background:#f2faff;color:#1455a0}
-.club-app .reading-adventure>.reading-fullscreen-note{position:absolute;top:8px;left:50%;transform:translateX(-50%);max-width:35%;padding:8px 14px;border-radius:14px;background:#063766;color:#fff;font-size:12px;line-height:1.5;text-align:center;z-index:6;pointer-events:none}
+.club-app .reading-adventure>.reading-fullscreen-note{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0)}
 .club-app .reading-adventure:fullscreen,.club-app .reading-adventure.reading-immersive{position:fixed;inset:0;z-index:2200;width:100%;height:100dvh;max-width:none;max-height:none;min-height:0;margin:0;border:0;border-radius:0;overflow:auto;background:linear-gradient(145deg,#78d5ff,#ddf5ff);box-sizing:border-box}
 .club-app .student-experience .reading-adventure.reader-viewport:fullscreen,.club-app .student-experience .reading-adventure.reader-viewport.reading-immersive{height:100dvh;padding:8px 12px 10px}
-.club-app .reading-focused:fullscreen>h1,.club-app .reading-focused.reading-immersive>h1{max-width:30vw;justify-self:end}
-@media(max-width:1199px){.club-app .reading-adventure>.reading-fullscreen-note{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0)}.club-app .reading-focused:fullscreen>h1,.club-app .reading-focused.reading-immersive>h1{max-width:100%}}
+@media(max-width:600px){
+ .club-app .student-experience .reading-adventure.reading-focused.reader-viewport:has(.reading-fullscreen-toggle){grid-template-columns:minmax(0,1fr) minmax(0,1fr) 44px;grid-template-rows:auto auto minmax(0,1fr)}
+ .club-app .student-experience .reading-adventure.reading-focused.reader-viewport>.reading-back{grid-column:1/3}
+ .club-app .student-experience .reading-adventure.reading-focused.reader-viewport>h1{grid-column:1/-1;grid-row:2}
+ .club-app .student-experience .reading-adventure.reading-focused.reader-viewport>.storybook-reader{grid-row:3}
+}
 
 /* Per-page composition editor. */
 .club-app .management-dialog.story-editor:has(.page-designer){max-width:min(1200px,100%)}
@@ -144,3 +149,24 @@
 }
 @media(max-width:400px){.club-app .page-element-options{grid-template-columns:1fr}.club-app .page-element{padding:10px}.club-app .page-add-elements>button{width:100%}}
 @media(pointer:coarse){.club-app .page-element>header{flex-wrap:wrap}.club-app .page-element-actions{margin-left:auto}.club-app .management-dialog .page-element-actions button{min-width:44px;min-height:44px}}
+
+/* Fit each saved page to the available paper; long text continues via navigation. */
+.club-app .storybook-sheet-content.storybook-fit-page{overflow:hidden;scrollbar-width:none;scroll-behavior:auto}
+.club-app .storybook-fit-page::-webkit-scrollbar{display:none}
+.club-app .storybook-fit-content{min-height:100%}
+.club-app .storybook-fit-content>.story-page-content{min-height:var(--reader-page-height);height:auto}
+.club-app .storybook-fit-spacer{height:var(--reader-page-height);pointer-events:none}
+.club-app .storybook-fit-page .story-page-content .story-image{min-height:0;max-height:var(--reader-image-height);flex-shrink:0}
+.club-app .storybook-fit-page .story-page-content .story-image img{max-height:var(--reader-image-height);object-fit:contain}
+.club-app .storybook-fit-page .story-page-content .story-image:is(.format-full,.size-custom){height:var(--reader-image-height);min-height:0;max-height:var(--reader-image-height)}
+.club-app .storybook-fit-page .story-page-content.template-two-images{grid-template-rows:auto auto}
+.club-app .storybook-fit-page .story-page-content.template-two-images .story-image{height:var(--reader-image-height);min-height:0}
+.club-app .storybook-fit-page .story-page-content.template-overlay>.story-image{height:var(--reader-image-height);min-height:0}
+.club-app .storybook-fit-page .story-page-content.template-overlay .story-overlay-copy{align-self:start}
+.club-app .storybook-part-counter{display:block;font-size:.72em;line-height:1.3}
+
+.club-app .storybook-fit-page .story-page-content.template-mixed{align-items:start}
+.club-app .storybook-fit-page .story-page-content.reader-long-overlay{display:flex;height:auto;justify-content:flex-start}
+.club-app .storybook-fit-page .reader-long-overlay>.story-image{align-self:center}
+.club-app .storybook-fit-content{padding-top:4px;box-sizing:border-box}
+.club-app .storybook-fit-content>.story-page-content{min-height:calc(var(--reader-page-height) - 4px)}
