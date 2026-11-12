@@ -33,6 +33,9 @@ export const BookPageViewport=forwardRef<PageViewportHandle,Props>(function Book
    const imageHeight=Math.max(32,Math.floor(Math.min(height,Math.max(Math.min(80,height*.25),budget))/Math.max(1,side||overlay?1:figures.length)));
    host.style.setProperty('--reader-image-height',imageHeight+'px');
    host.style.setProperty('--reader-page-height',height+'px');
+   const imageSpace=figures.reduce((sum,e)=>sum+e.offsetHeight,0);
+   const balanced=textHeight<height-64&&(side||overlay||textHeight+imageSpace+gap*Math.max(0,texts.length+figures.length-1)<height-8);
+   composition.classList.toggle('reader-balanced',balanced);
    const bounds=host.getBoundingClientRect(),offset=host.scrollTop,blocks:ReadingBlock[]=[];
    const append=(rect:DOMRect)=>{if(rect.height>0&&rect.width>0)blocks.push({top:Math.max(0,rect.top-bounds.top+offset),bottom:rect.bottom-bounds.top+offset});};
    for(const figure of figures)append(figure.getBoundingClientRect());
@@ -58,7 +61,7 @@ export const BookPageViewport=forwardRef<PageViewportHandle,Props>(function Book
   notify.current({id:page.id,part,count:parts.length,ready:true});
  },[page.id,parts,part]);
  return <div ref={viewport} className="storybook-sheet-content storybook-fit-page" tabIndex={0}>
-  <div ref={content} className="storybook-fit-content"><BookPageContent page={page}/></div>
+  <div ref={content} className="storybook-fit-content"><BookPageContent page={page} reading/></div>
   {parts.length>1&&<div className="storybook-fit-spacer" aria-hidden="true"/>}
  </div>;
 });

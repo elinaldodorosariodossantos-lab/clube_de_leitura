@@ -170,3 +170,24 @@
 .club-app .storybook-fit-page .reader-long-overlay>.story-image{align-self:center}
 .club-app .storybook-fit-content{padding-top:4px;box-sizing:border-box}
 .club-app .storybook-fit-content>.story-page-content{min-height:calc(var(--reader-page-height) - 4px)}
+
+/* Use the paper as a composition, with a centered reading area. */
+.club-app .storybook-fit-page .story-page-content .story-text{text-align:center!important;align-self:center;width:100%;box-sizing:border-box}
+.club-app .storybook-fit-page .story-page-content .story-text p{font-size:clamp(21px,1.85vw,34px);line-height:1.55;text-wrap:pretty}
+.club-app .storybook-fit-page .story-page-content .story-text p:last-child{margin-bottom:0}
+.club-app .storybook-fit-page .story-page-content.reader-balanced{justify-content:center;align-content:center;align-items:center}
+.club-app .storybook-fit-page .story-page-content.template-mixed:is(.position-left,.position-right)>.story-image.size-large{height:var(--reader-image-height);aspect-ratio:auto}
+.club-app .storybook-fit-page .story-page-content.template-mixed>.story-text{padding:clamp(8px,2vw,32px)}
+@media(max-width:600px){
+ .club-app .storybook-fit-page .story-page-content .story-text p{font-size:clamp(20px,5vw,24px)}
+ .club-app .storybook-fit-page .story-page-content.template-mixed:is(.position-left,.position-right)>.story-image.size-large{height:auto;max-height:var(--reader-image-height);aspect-ratio:16/9}
+ .club-app .storybook-fit-page .story-page-content.template-mixed>.story-text{padding:0 4px}
+}
+.club-app .storybook-fit-page .story-reading-copy{display:flex;flex-direction:column;justify-content:center;gap:clamp(16px,2vw,26px);min-width:0}
+.club-app .storybook-fit-page .position-left>.story-reading-copy{grid-column:2}
+.club-app .storybook-fit-page .position-right>.story-reading-copy{grid-column:1;grid-row:1}
+.club-app .storybook-fit-page .story-reading-copy>.story-text{padding:clamp(8px,2vw,28px)}
+@media(max-width:600px){
+ .club-app .storybook-fit-page .story-reading-copy{order:1}
+ .club-app .storybook-fit-page .story-reading-copy>.story-text{padding:0 4px}
+}
