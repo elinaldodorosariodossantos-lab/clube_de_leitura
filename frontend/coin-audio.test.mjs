@@ -50,3 +50,36 @@ test('a reward blocked before a gesture plays after unlock, and mute cancels a p
   await new Promise(r=>setImmediate(r));assert.equal(starts,0);assert.equal(instance.state,'running');
  }finally{for(const [key,value] of Object.entries(saved)){if(value===undefined)delete globalThis[key];else globalThis[key]=value;}}
 });
+
+test('coin animation and sound start together; slow audio never plays after the animation starts',async()=>{
+ const source=await readFile(new URL('./src/services/coin-audio.ts',import.meta.url),'utf8');
+ const code=ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}}).outputText;
+ const keys=['fetch','localStorage','AudioContext','requestAnimationFrame','cancelAnimationFrame'];
+ const saved=Object.fromEntries(keys.map(k=>[k,globalThis[k]]));
+ let delay=0,visualAt=0,audioAt=0,starts=0,stops=0,duration=0;
+ globalThis.localStorage={getItem:()=> 'on'};
+ globalThis.fetch=async()=>({ok:true,arrayBuffer:async()=>new ArrayBuffer(8)});
+ globalThis.requestAnimationFrame=cb=>setTimeout(()=>cb(performance.now()),0);
+ globalThis.cancelAnimationFrame=clearTimeout;
+ globalThis.AudioContext=class{
+  state='running';destination={};currentTime=0;
+  async resume(){}
+  async decodeAudioData(){if(delay)await new Promise(r=>setTimeout(r,delay));return {duration:4.477};}
+  createBufferSource(){return {connect(){},disconnect(){},start(_when,_offset,length){starts++;audioAt=performance.now();duration=length;},stop(){stops++;}};}
+  createGain(){return {gain:{value:0,setValueAtTime(){},linearRampToValueAtTime(){}},connect(){},disconnect(){}};}
+ };
+ try{
+  const service=await import('data:text/javascript;base64,'+Buffer.from(code+'\n// synchronized').toString('base64'));
+  const cancel=service.synchronizeCoinReward(()=>visualAt=performance.now(),2100);
+  await new Promise(r=>setTimeout(r,30));assert.equal(starts,1);assert.ok(Math.abs(audioAt-visualAt)<20);assert.equal(duration,2.1);
+  cancel();assert.equal(stops,1);
+  delay=450;starts=0;visualAt=0;
+  const slow=await import('data:text/javascript;base64,'+Buffer.from(code+'\n// slow synchronized').toString('base64'));
+  slow.synchronizeCoinReward(()=>visualAt=performance.now(),3000);
+  await new Promise(r=>setTimeout(r,320));assert.ok(visualAt>0);assert.equal(starts,0);
+  await new Promise(r=>setTimeout(r,200));slow.unlockCoinAudio();
+  await new Promise(r=>setTimeout(r,30));assert.equal(starts,0);
+  visualAt=0;const cancelled=slow.synchronizeCoinReward(()=>visualAt=performance.now(),3000);cancelled();
+  await new Promise(r=>setTimeout(r,30));assert.equal(visualAt,0);assert.equal(starts,0);
+ }finally{for(const [key,value] of Object.entries(saved)){if(value===undefined)delete globalThis[key];else globalThis[key]=value;}}
+});

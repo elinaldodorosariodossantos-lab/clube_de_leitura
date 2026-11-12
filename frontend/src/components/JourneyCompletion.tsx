@@ -1,4 +1,4 @@
-import {playCoinReward} from '../services/coin-audio';
+import {useCoinCelebration} from '../hooks/useCoinCelebration';
 import {useEffect,useRef,useState} from 'react';
 import {Award,BookOpen,CheckCircle2,Coins,Crown,Home,Printer,Star,Trophy,X,BarChart3,Layers,Target} from 'lucide-react';
 import {WalletCoins} from './WalletCoins';
@@ -11,22 +11,16 @@ const date=(value:string)=>new Date(value).toLocaleDateString('pt-BR',{timeZone:
 export function JourneyCompletion({data:d,celebrate,onHome,onProgress}:{data:JourneyCompletionData;celebrate:boolean;onHome:()=>void;onProgress:()=>void}){
  const [view,setView]=useState<'general'|'levels'|'position'|'achievements'>('general');
  const [certificate,setCertificate]=useState(false),panel=useRef<HTMLElement>(null);
- const returnToLevels=useRef(onHome);
- useEffect(()=>{returnToLevels.current=onHome;},[onHome]);
- useEffect(()=>{
-  const timeout=window.setTimeout(()=>returnToLevels.current(),10_000);
-  return()=>window.clearTimeout(timeout);
- },[d.id]);
  useModalFocus(onHome,!certificate);
  useModalFocus(()=>setCertificate(false),certificate);
  useEffect(()=>{panel.current?.querySelector<HTMLButtonElement>(certificate?'.certificate-controls button':'button')?.focus();},[certificate]);
+ const rewardReady=useCoinCelebration(d.id,celebrate,d.coins);
  const [earned,setEarned]=useState(celebrate?0:d.coins);
- useEffect(()=>{if(!celebrate||window.matchMedia('(prefers-reduced-motion: reduce)').matches){setEarned(d.coins);return;}let frame=0;const start=performance.now();const tick=(now:number)=>{const p=Math.min(1,(now-start)/1400);setEarned(d.coins*(1-Math.pow(1-p,3)));if(p<1)frame=requestAnimationFrame(tick);};frame=requestAnimationFrame(tick);return()=>cancelAnimationFrame(frame);},[d.id,d.coins,celebrate]);
- useEffect(()=>{if(celebrate&&(d.coins??0)>0)void playCoinReward();},[d.id,celebrate]);
+ useEffect(()=>{if(!rewardReady)return;if(!celebrate||window.matchMedia('(prefers-reduced-motion: reduce)').matches){setEarned(d.coins);return;}let frame=0;const start=performance.now();const tick=(now:number)=>{const p=Math.min(1,(now-start)/1400);setEarned(d.coins*(1-Math.pow(1-p,3)));if(p<1)frame=requestAnimationFrame(tick);};frame=requestAnimationFrame(tick);return()=>cancelAnimationFrame(frame);},[d.id,d.coins,celebrate,rewardReady]);
  const best=[...d.levels].sort((a,b)=>b.performance-a.performance)[0];
  const podium=[...d.ranking].filter(p=>p.position<=3).sort((a,b)=>[2,1,3].indexOf(a.position)-[2,1,3].indexOf(b.position));
  const self=d.ranking.find(p=>p.self);
- return <div className={'journey-final-backdrop'+(celebrate?' is-celebrating':'')}><section ref={panel} className="journey-final journey-library" role="dialog" aria-modal="true" aria-labelledby="journey-final-title">
+ return <div className={'journey-final-backdrop'+(celebrate?' is-celebrating':'')+(!rewardReady?' reward-audio-waiting':'')}><section ref={panel} className="journey-final journey-library" role="dialog" aria-modal="true" aria-labelledby="journey-final-title">
   <header className="journey-final-brand"><BookOpen/><strong>Clube da<br/>Leitura <em>2026</em></strong><nav className="journey-tabs" aria-label="Resultados da jornada">{([{id:'general',label:'Ranking Geral',Icon:Trophy},{id:'levels',label:'Por Nível',Icon:Layers},{id:'position',label:'Minha Posição',Icon:BarChart3},{id:'achievements',label:'Minhas Conquistas',Icon:Award}] as const).map(({id,label,Icon})=><button key={id} aria-pressed={view===id} onClick={()=>setView(id)}><Icon/>{label}</button>)}</nav><button onClick={onHome} aria-label="Voltar aos níveis"><X/></button></header>
   {celebrate&&<div className="journey-final-confetti" aria-hidden="true">{Array.from({length:24},(_,i)=><i key={i} style={{left:(i*37%100)+'%',animationDelay:(i%6)*.12+'s',background:['#ffce32','#1688ff','#ec68ba','#26bf69'][i%4]}}/>)}</div>}
   {celebrate&&<div className="journey-final-coin-fall" aria-hidden="true">{Array.from({length:8},(_,i)=><span key={i} style={{left:(8+i*12)+'%',animationDelay:i*.1+'s'}}><WalletCoins/></span>)}</div>}

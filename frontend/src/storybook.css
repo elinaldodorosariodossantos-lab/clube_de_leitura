@@ -191,3 +191,23 @@
  .club-app .storybook-fit-page .story-reading-copy{order:1}
  .club-app .storybook-fit-page .story-reading-copy>.story-text{padding:0 4px}
 }
+
+/* Comfortable story typography for beginning readers. */
+.club-app .storybook-fit-page .story-page-content .story-text p{
+ max-width:38ch;
+ margin-inline:auto;
+ font-family:Nunito,"Trebuchet MS",sans-serif;
+ font-size:clamp(25px,2.15vw,38px);
+ font-weight:700;
+ line-height:1.65;
+ letter-spacing:.015em;
+ word-spacing:.035em;
+ color:#17365e;
+ text-wrap:pretty;
+ hyphens:none;
+}
+.club-app .storybook-fit-page .story-page-content .story-text p+p{margin-top:.7em}
+.club-app .storybook-fit-page .story-page-content .story-text :is(h2,h3){max-width:30ch;margin-inline:auto;line-height:1.35;letter-spacing:.01em;text-wrap:balance}
+@media(max-width:600px){
+ .club-app .storybook-fit-page .story-page-content .story-text p{font-size:clamp(22px,5.8vw,27px);line-height:1.6;letter-spacing:.01em;word-spacing:.025em}
+}

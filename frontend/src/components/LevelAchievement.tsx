@@ -1,4 +1,4 @@
-import {playCoinReward} from '../services/coin-audio';
+import {useCoinCelebration} from '../hooks/useCoinCelebration';
 import {formatPoints as number} from '../services/format';
 import {useEffect,useRef,useState,type CSSProperties} from 'react';
 import {ArrowRight,BookOpen,CheckCircle2,Coins,LogOut,Star,UserRound} from 'lucide-react';
@@ -9,14 +9,14 @@ import type {LevelAchievementData} from '../types/portal';
 import '../achievement.css';
 type Props={celebrate?:boolean;achievement:LevelAchievementData;studentName?:string;busy:boolean;error?:string;message?:string;onContinue:()=>void;onClose:()=>void;onLogout?:()=>void};
 export function LevelAchievement({achievement:a,celebrate=false,studentName,busy,error,message,onContinue,onClose,onLogout}:Props){
+ const rewardReady=useCoinCelebration(a.id,celebrate,a.coins??0);
  const [displayed,setDisplayed]=useState({points:celebrate?0:a.points,coins:celebrate?0:(a.coins??0)});
- useEffect(()=>{if(!celebrate||window.matchMedia('(prefers-reduced-motion: reduce)').matches){setDisplayed({points:a.points,coins:a.coins??0});return;}let frame=0;const started=performance.now();const tick=(now:number)=>{const progress=Math.min(1,(now-started)/1400),ratio=1-Math.pow(1-progress,3);setDisplayed({points:a.points*ratio,coins:(a.coins??0)*ratio});if(progress<1)frame=requestAnimationFrame(tick);};setDisplayed({points:0,coins:0});frame=requestAnimationFrame(tick);return()=>cancelAnimationFrame(frame);},[a.id,a.points,a.coins,celebrate]);
- useEffect(()=>{if(celebrate&&(a.coins??0)>0)void playCoinReward();},[a.id,celebrate]);
+ useEffect(()=>{if(!rewardReady)return;if(!celebrate||window.matchMedia('(prefers-reduced-motion: reduce)').matches){setDisplayed({points:a.points,coins:a.coins??0});return;}let frame=0;const started=performance.now();const tick=(now:number)=>{const progress=Math.min(1,(now-started)/1400),ratio=1-Math.pow(1-progress,3);setDisplayed({points:a.points*ratio,coins:(a.coins??0)*ratio});if(progress<1)frame=requestAnimationFrame(tick);};setDisplayed({points:0,coins:0});frame=requestAnimationFrame(tick);return()=>cancelAnimationFrame(frame);},[a.id,a.points,a.coins,celebrate,rewardReady]);
  const panel=useRef<HTMLElement>(null);
  useModalFocus(()=>{if(!busy)onClose();});
  useEffect(()=>{if(!busy&&panel.current&&!panel.current.contains(document.activeElement))panel.current.querySelector<HTMLButtonElement>('button:not(:disabled)')?.focus();},[busy]);
  const next=a.nextLevel?levelNames[a.nextLevel]:null,modern=(a.scoreVersion??1)>=2;
- return <div className="achievement-backdrop"><section ref={panel} className={"level-achievement reward-simple reward-results"+(celebrate?" is-celebrating":"")} role="dialog" aria-modal="true" aria-labelledby="achievement-title" aria-describedby="achievement-message">
+ return <div className="achievement-backdrop"><section ref={panel} className={"level-achievement reward-simple reward-results"+(celebrate?" is-celebrating":"")+(!rewardReady?" reward-audio-waiting":"")} role="dialog" aria-modal="true" aria-labelledby="achievement-title" aria-describedby="achievement-message">
   <header className="reward-header"><span className="reward-brand"><BookOpen/><strong>Clube da Leitura <em>2026</em></strong></span><span className="reward-account">{studentName&&<span><UserRound size={20}/>Olá, {studentName.split(' ')[0]}!</span>}<button onClick={onLogout??onClose} disabled={busy}><LogOut size={19}/>{onLogout?'Sair':'Voltar ao clube'}</button></span></header>
   <div className="reward-landscape" aria-hidden="true"><span className="reward-cloud cloud-left"/><span className="reward-cloud cloud-right"/><span className="reward-foliage foliage-left"/><span className="reward-foliage foliage-right"/>{Array.from({length:14},(_,i)=><GoldCoin key={i} className={'landscape-coin coin-'+i}/>)}</div>
   <div className="achievement-confetti" aria-hidden="true">{Array.from({length:32},(_,i)=><i key={i} style={{'--x':`${(i*37)%100}%`,'--delay':`${(i%8)*.09}s`,'--turn':`${i*43}deg`,'--color':['#2474ec','#ffbf38','#e750c5','#38bb9a'][i%4]} as CSSProperties}/>)}</div>

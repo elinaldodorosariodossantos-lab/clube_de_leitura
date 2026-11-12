@@ -50,3 +50,36 @@ export async function playCoinReward(ctx=context){
  const ready=unlockCoinAudio();
  if(ready)await flush(ready);
 }
+
+// Start the visual reward and its sound in the same frame. Never replay it later.
+export function synchronizeCoinReward(onStart:()=>void,durationMs:number){
+ let cancelled=false,started=false,frame=0;
+ let source:AudioBufferSourceNode|undefined;
+ const finish=(ctx?:AudioContext,buffer?:AudioBuffer)=>{
+  if(cancelled||started)return;started=true;clearTimeout(timeout);
+  frame=requestAnimationFrame(()=>{
+   if(cancelled)return;
+   onStart();
+   if(!ctx||!buffer||ctx.state!=='running'||!enabled())return;
+   // Wallet and ranking may present the same reward in the same frame.
+   if(active&&performance.now()-lastPlayed<100)return;
+   stopCoinReward();
+   const node=ctx.createBufferSource(),gain=ctx.createGain();
+   source=node;node.buffer=buffer;gain.gain.value=.8;
+   node.connect(gain);gain.connect(ctx.destination);active=node;lastPlayed=performance.now();
+   const offset=Math.min(.04,buffer.duration/2),duration=Math.min(durationMs/1000,buffer.duration-offset);
+   gain.gain.setValueAtTime(.8,ctx.currentTime+Math.max(0,duration-.12));
+   gain.gain.linearRampToValueAtTime(0,ctx.currentTime+duration);
+   node.onended=()=>{node.disconnect();gain.disconnect();if(active===node)active=undefined;};
+   node.start(0,offset,duration);
+  });
+ };
+ expires=0;generation++;
+ const timeout=setTimeout(()=>finish(),250);
+ if(!enabled()){finish();}else{
+  const ctx=unlockCoinAudio();
+  if(ctx)void Promise.all([prepareCoinReward(ctx),ctx.state==='running'?Promise.resolve():ctx.resume()]).then(([buffer])=>finish(ctx,buffer)).catch(()=>finish());
+  else finish();
+ }
+ return()=>{cancelled=true;clearTimeout(timeout);cancelAnimationFrame(frame);if(source&&active===source)stopCoinReward();};
+}

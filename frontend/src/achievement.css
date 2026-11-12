@@ -161,3 +161,4 @@
 @keyframes level-podium-rise{from{opacity:0;transform:translateY(45px) scaleY(.45)}to{opacity:1;transform:none}}@keyframes level-ranking-reveal{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}@keyframes level-score-glow{from{text-shadow:0 0 24px #ffd93a;transform:scale(.9)}to{text-shadow:none;transform:none}}
 @media(max-width:480px){.level-ranking-podium{gap:6px}.level-podium-card{padding:12px 5px}.level-podium-card>strong{font-size:12px}.level-podium-card>b{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.is-celebrating .level-podium-card,.is-celebrating .level-ranking-list>li,.is-celebrating .level-points-total>strong{animation:none!important}}
+.club-app .reward-audio-waiting :is(.landscape-coin,.achievement-medal,.reward-sparkle,.achievement-confetti i){animation-play-state:paused!important}
