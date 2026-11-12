@@ -13,3 +13,7 @@
 .club-app .school-module-actions svg,.club-app .school-pagination-controls svg{width:18px;height:18px;flex-shrink:0;stroke-width:2}
 .club-app .school-module-actions>a,.club-app .school-module-actions>button{white-space:nowrap}
 @media(max-width:650px){.club-app .school-module-pagination{gap:12px}.club-app .school-module-pagination>span{flex-basis:calc(100% - 200px);min-width:120px;text-align:right}.club-app .school-module-pagination>.school-pagination-controls{width:100%;justify-content:space-between}}
+.club-app .school-module-table .school-record-link{display:inline-flex;align-items:center;justify-content:center;width:44px;min-width:44px;height:44px;min-height:44px;padding:0;border:1px solid #d4e2f4;border-radius:10px;background:#f5f9ff;color:#1764b2}
+.club-app .school-record-link svg{width:18px;height:18px;flex-shrink:0}
+.club-app .access-record-table table{min-width:0;table-layout:fixed}
+.club-app .access-record-table :is(th,td):last-child{width:90px}

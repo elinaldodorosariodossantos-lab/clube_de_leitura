@@ -12,9 +12,25 @@
 .club-app .management-dialog{max-height:calc(100dvh - 32px);max-width:min(800px,100%);overscroll-behavior:contain;scrollbar-gutter:stable}
 .club-app :is(.school-module-table,.management-table) td{overflow-wrap:break-word}
 .club-app .school-module-table td:first-child{max-width:420px;min-width:200px}
-.club-app .school-module-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-width:240px;width:260px;max-width:100%}
-.club-app .school-module-actions>a,.club-app .school-module-actions>button{min-height:40px;margin:0;padding:8px;white-space:nowrap}
-.club-app .school-module-table td:last-child{width:284px}
+.club-app .school-module-actions{display:flex;flex-wrap:nowrap;align-items:center;gap:6px;min-width:194px;width:max-content;max-width:100%}
+.club-app .school-module-actions>a,.club-app .school-module-actions>button{display:inline-flex;align-items:center;justify-content:center;flex:0 0 44px;width:44px;height:44px;min-height:44px;margin:0;padding:0;border:1px solid #d4e2f4;border-radius:10px;background:#f5f9ff;color:#1764b2;box-shadow:none}
+.club-app .school-module-actions :is(a,button):hover{background:#e7f1ff;border-color:#8db4e5}
+.club-app .school-module-actions .row-action-delete{color:#bc3746;background:#fff7f7;border-color:#f0d7dc}
+.club-app .school-module-actions .row-action-delete:hover{background:#ffe9ec;border-color:#df9eaa}
+.club-app .school-module-actions :is(a,button):focus-visible{outline:3px solid #4d9af4;outline-offset:2px}
+.club-app .school-module-actions button:disabled{opacity:.5;cursor:default}
+.club-app .school-directory-table table{min-width:720px;table-layout:fixed}
+.club-app .school-directory-table :is(th,td):nth-child(2){width:18%}
+.club-app .school-directory-table :is(th,td):nth-child(3){width:70px}
+.club-app .school-directory-table :is(th,td):nth-child(4){width:120px}
+.club-app .school-directory-table :is(th,td):last-child{width:220px}
+.club-app .school-directory-table :is(th,td){padding:14px 12px}
+.club-app .school-module-table td:last-child{width:auto}
+.club-app .school-module-table td:has(.school-module-actions){width:220px}
+.club-app .school-module-actions svg{width:18px;height:18px;stroke-width:2;flex-shrink:0}
+.club-app :is(.student-icon-actions,.story-icon-actions){display:flex;flex-wrap:nowrap;gap:6px;align-items:center}
+.club-app :is(.student-icon-actions,.story-icon-actions)>:is(button,a){display:inline-flex;align-items:center;justify-content:center;flex:0 0 44px;width:44px;height:44px;min-height:44px;padding:0;border-radius:10px}
+.club-app :is(.student-icon-actions,.story-icon-actions) svg{width:18px;height:18px;flex-shrink:0;stroke-width:2}
 .club-app :is(.admin-nav,.student-header,.row-actions,.management-actions) svg{flex-shrink:0}
 .club-app :is(.book-page-editor-heading,.book-page-editor-heading>.book-page-controls){flex-wrap:wrap}
 .club-app :is(.book-pages-heading,.book-page-editor-heading) h3{min-width:0;overflow-wrap:anywhere}
@@ -37,6 +53,19 @@
  .club-app .admin-shell .admin-nav .admin-sidebar-logout{margin:0 0 0 auto}
 }
 @media(max-width:700px){
+ .club-app .school-module-table.responsive-record-table{border:0;background:transparent;overflow:visible;border-radius:0}
+ .club-app .school-module-table.responsive-record-table table{display:block;min-width:0;width:100%;table-layout:auto}
+ .club-app .school-module-table.responsive-record-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+ .club-app .school-module-table.responsive-record-table tbody{display:grid;gap:12px;width:100%}
+ .club-app .school-module-table.responsive-record-table tr{display:block;min-width:0;padding:14px;background:#fff;border:1px solid #d8e5f5;border-radius:14px;box-shadow:0 2px 8px #23466d05}
+ .club-app .school-module-table.responsive-record-table td{display:grid;grid-template-columns:100px minmax(0,1fr);align-items:start;gap:10px;width:auto;min-width:0;max-width:none;padding:8px 0;border:0;overflow-wrap:anywhere;font-size:13px}
+ .club-app .school-module-table.responsive-record-table td::before{content:attr(data-label);font-size:12px;font-weight:600;color:#6d839e}
+ .club-app .school-module-table.responsive-record-table td:first-child{display:block;padding:0 0 12px;margin-bottom:4px;border-bottom:1px solid #eaf0f8;font-size:14px;line-height:1.6;color:#254b7a}
+ .club-app .school-module-table.responsive-record-table td:first-child::before{display:none}
+ .club-app .school-module-table.responsive-record-table td:last-child{display:block;padding-top:12px;margin-top:4px;border-top:1px solid #eaf0f8}
+ .club-app .school-module-table.responsive-record-table td:last-child::before{display:block;margin-bottom:8px}
+ .club-app .school-module-table.responsive-record-table .school-module-actions{min-width:0;width:max-content;max-width:100%;gap:8px}
+ .club-app .school-module-table.responsive-record-table td>a.school-record-link{display:inline-flex}
  .club-app .admin-shell .admin-content{padding:20px 14px}
  .club-app :is(.management-heading,.schools-heading,.events-heading){align-items:stretch;gap:14px}
  .club-app :is(.management-heading,.schools-heading,.events-heading)>.club-button{width:100%;white-space:normal}

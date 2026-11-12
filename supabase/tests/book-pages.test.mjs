@@ -21,6 +21,7 @@ test('livros por paginas: rascunhos, publicacao, progresso, eventos e historico'
   await identity(admin,false);
 
   const pages=Array.from({length:3},(_,i)=>({id:randomUUID(),text:'Trecho '+i,image:'https://example.test/page-'+i+'.png',layout:['illustration','side','frame'][i]}));
+  pages[0]={...pages[0],template:'mixed',align:'center',imagePosition:'right',elements:[{id:randomUUID(),type:'text',style:'title',text:pages[0].text},{id:randomUUID(),type:'image',image:pages[0].image,format:'portrait',size:'custom',width:65,height:300,alt:'Ilustração de teste'}]};
   const draft={id:'book',title:'Livro manual',author:'Autor',content:'',age:'7 anos',level:'facil',ordering:0,active:false,required:true,questions:[{prompt:'',options:['',''],correct:0}],pages:[{...pages[0],text:'',image:''}]};
   await rpc('clube_gestao','story_save',draft);
   let saved=await rpc('clube_gestao','story',{id:'book'});
