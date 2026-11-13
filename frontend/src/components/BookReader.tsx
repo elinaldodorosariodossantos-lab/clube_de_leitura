@@ -1,6 +1,7 @@
 ﻿import {useEffect,useLayoutEffect,useRef,useState} from 'react';
 import {ArrowLeft,ArrowRight,CheckCircle2} from 'lucide-react';
 import {BookPageViewport,type PageView,type PageViewportHandle} from './BookPageViewport';
+import {pageElements} from '../services/book-pages';
 import type {BookPage} from '../types/management';
 import '../storybook.css';
 
@@ -13,7 +14,9 @@ export function BookReader({pages,index,busy,onPage,onComplete}:{pages:BookPage[
  useLayoutEffect(()=>{if(!turn||!snapshotHost.current)return;snapshotHost.current.replaceChildren(turn.snapshot);const content=turn.snapshot.querySelector<HTMLElement>('.storybook-sheet-content');if(content)content.scrollTop=turn.scroll;},[turn]);
  const viewport=useRef<PageViewportHandle>(null);
  const [view,setView]=useState<PageView>({id:'',part:0,count:1,ready:false});
+ const warmed=useRef(new Set<string>());
  const current=Math.min(Math.max(index,0),Math.max(0,pages.length-1));
+ useEffect(()=>{for(const page of pages.slice(Math.max(0,current-1),current+2)){for(const element of pageElements(page)){if(element.type!=='image'||!element.image||warmed.current.has(element.image))continue;warmed.current.add(element.image);const image=new Image();image.decoding='async';image.src=element.image;void image.decode?.().catch(()=>{warmed.current.delete(element.image!);});}}},[pages,current]);
  useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;clearTimeout(timer.current);};},[]);
  useLayoutEffect(()=>{
   const workspace=root.current?.closest<HTMLElement>('.reading-adventure');if(!workspace)return;
@@ -36,7 +39,7 @@ export function BookReader({pages,index,busy,onPage,onComplete}:{pages:BookPage[
   try{
    await onPage(next);if(!mounted.current)return;
    setTurn({...transition,phase:'turning'});
-   await new Promise<void>(resolve=>{timer.current=setTimeout(resolve,window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:650);});
+   await new Promise<void>(resolve=>{timer.current=setTimeout(resolve,window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:240);});
   }catch{if(mounted.current)setError('Não foi possível virar a página. Tente novamente; seu progresso está preservado.');}
   finally{if(mounted.current){setTurn(null);locked.current=false;root.current?.querySelector<HTMLElement>('.storybook-spread .storybook-sheet-content')?.focus({preventScroll:true});}}
  }

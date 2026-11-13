@@ -62,7 +62,7 @@
 .club-app .storybook-end{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;flex:1;color:#a5814c;font:800 22px Nunito,sans-serif}
 .club-app .storybook-error{padding:10px;border-radius:8px;background:#fff2df;color:#8d430d;font-size:13px}
 .club-app .storybook-turn{position:absolute;inset:10px 12px 16px;z-index:5;pointer-events:none;perspective:1800px;overflow:hidden;border-radius:14px}
-.club-app .storybook-turn-leaf{position:absolute;inset:0;transform-origin:left center;transform-style:preserve-3d;animation:storybook-forward 650ms cubic-bezier(.35,.05,.25,1) both}
+.club-app .storybook-turn-leaf{position:absolute;inset:0;transform-origin:left center;transform-style:preserve-3d;animation:storybook-forward 240ms cubic-bezier(.2,.65,.3,1) both}
 .club-app .turn-backward .storybook-turn-leaf{transform-origin:right center;animation-name:storybook-backward}
 .club-app .storybook-turn-front,.club-app .storybook-turn-back{position:absolute;inset:0;backface-visibility:hidden;overflow:hidden}
 .club-app .storybook-turn-back{transform:rotateY(180deg)}

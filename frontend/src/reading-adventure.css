@@ -67,3 +67,9 @@
  .club-app .student-experience .reading-adventure.reading-answering .reading-question .reading-option{font-size:21px;gap:10px;min-height:68px;padding:12px 10px}
  .club-app .student-experience .reading-adventure.reading-answering .adventure-answer-letter{flex-basis:34px;height:36px;font-size:20px}
 }
+
+.club-app .reading-question .question-content{animation:question-arrive 140ms ease-out}
+.club-app .reading-question .question-save-status{min-height:1.5em}
+.club-app .reading-question h2:focus{outline:none}
+@keyframes question-arrive{from{opacity:.55;transform:translateX(6px)}to{opacity:1;transform:translateX(0)}}
+@media(prefers-reduced-motion:reduce){.club-app .reading-question .question-content{animation:none}}
