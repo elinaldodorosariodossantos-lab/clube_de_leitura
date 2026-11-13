@@ -27,3 +27,6 @@
 .welcome-transition::before{content:'';width:16px;height:16px;border-radius:50%;border:3px solid #c6e3ff;border-top-color:#1676e5;animation:welcome-spin 1s linear infinite}
 @keyframes welcome-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.welcome-transition::before{animation:none}}
+.club-app .level-event-stories{list-style:none;padding:0;margin:0 0 18px;width:100%;display:grid;gap:8px}
+.club-app .level-event-stories li{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:#ffffffa6;border-radius:10px;font-size:15px;line-height:1.4;overflow-wrap:anywhere}
+.club-app .level-event-stories li svg{flex-shrink:0;color:#16814b}

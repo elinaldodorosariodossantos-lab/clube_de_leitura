@@ -1,0 +1,50 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {randomUUID} from 'node:crypto';
+import {PGlite} from '../../.qa/postgres/node_modules/@electric-sql/pglite/dist/index.js';
+
+test('event levels enforce schedule, school, age, sequence and preserve results',async()=>{
+ const db=new PGlite(),admin=randomUUID(),user=randomUUID(),outsider=randomUUID();
+ const identity=async(id,anonymous=true)=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false),set_config('request.jwt.claims',$2,false)",[id,JSON.stringify({sub:id,is_anonymous:anonymous})]);await db.exec('set role authenticated');};
+ let transaction=false;
+ const rpc=async(fn,op,args={})=>{if(transaction)await db.exec('savepoint test_rpc');try{const result=(await db.query('select public.'+fn+'($1,$2::jsonb) data',[op,JSON.stringify(args)])).rows[0].data;if(transaction)await db.exec('release savepoint test_rpc');return result;}catch(e){if(transaction)await db.exec('rollback to savepoint test_rpc;release savepoint test_rpc');throw e;}};
+ const reading=(op,args)=>rpc('clube_leitura',op,args);
+ const installer=await readFile(new URL('../instalar-eventos.sql',import.meta.url),'utf8');
+ try{
+  await db.exec("create role anon;create role authenticated;create schema auth;create table auth.users(id uuid primary key,is_anonymous boolean default true);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;create function auth.jwt() returns jsonb language sql stable as $$select coalesce(nullif(current_setting('request.jwt.claims',true),''),'{}')::jsonb$$;grant usage on schema auth to anon,authenticated;");
+  for(const file of ['202610120001_clube.sql','202610140001_portal.sql','202610150001_leitura.sql','202610150002_admin.sql','202610190001_progressao.sql','202610190002_sequencia.sql'])await db.exec(await readFile(new URL('../migrations/'+file,import.meta.url),'utf8'));
+  await db.exec(installer);
+  await db.query('insert into auth.users values($1,false),($2,true),($3,true)',[admin,user,outsider]);
+  await db.query("insert into public.perfis(id,nome,papel) values($1,'Admin','admin')",[admin]);
+  await identity(user);const student=(await rpc('clube_portal','register',{name:'Leitor Evento',age:4,school:'Escola Evento',className:'Infantil'})).student;
+  await db.exec('reset role');await db.query("update public.alunos set data_nascimento=(clube_private.hoje_leitura()-interval '4 years')::date where id=$1",[student.id]);
+  await identity(outsider);const other=(await rpc('clube_portal','register',{name:'Outro Leitor',age:4,school:'Outra Escola',className:'Infantil'})).student;
+  await db.exec('reset role');await db.query("update public.alunos set data_nascimento=(clube_private.hoje_leitura()-interval '4 years')::date where id=$1",[other.id]);
+  await identity(admin,false);
+  for(const level of ['facil','medio','dificil'])await rpc('clube_gestao','story_save',{id:'schedule-'+level,title:'Historia '+level,author:'Escola',age:'4 anos',level,ordering:0,active:true,required:true,pages:[{id:randomUUID(),text:'Era uma vez.',image:''}],questions:[{prompt:'Quem?',options:['A','B'],correct:0}]});
+  const schools=await rpc('clube_gestao','schools'),school=schools.find(s=>s.name==='Escola Evento');
+  const event=await rpc('clube_eventos','save',{requestId:randomUUID(),automatic:true,name:'Evento de Leitura',description:'Vamos ler',startsAt:new Date(Date.now()+3600000).toISOString(),endsAt:new Date(Date.now()+7200000).toISOString(),active:true,schoolIds:[school.id],ageConfigs:[{age:4,levels:['facil','medio','dificil'].map(level=>({level,quantity:1}))}]});
+  await identity(user);
+  let state=await reading('state');assert.equal(state.eventSchedule.status,'not_started');assert.ok(state.levels.every(l=>l.available===0&&!l.unlocked&&!l.stories.length));assert.equal(state.active,null);
+  await assert.rejects(reading('enter',{level:'facil'}),e=>e.code==='22023');
+  assert.deepEqual(await reading('stories',{level:'facil'}),[]);
+  await assert.rejects(rpc('clube_eventos','enter',{id:event.id}));
+  await identity(outsider);assert.equal((await reading('state')).eventSchedule.status,'unavailable');
+  await db.exec('reset role;begin');transaction=true;await db.query("update public.eventos_leitura set inicio=now(),fim=now()+interval '1 hour' where id=$1",[event.id]);
+  await identity(user);state=await reading('state');assert.equal(state.eventSchedule.status,'active');assert.equal(state.levels[0].available,1);assert.equal(state.levels[0].unlocked,true);assert.equal(state.levels[1].unlocked,false);
+  await assert.rejects(reading('enter',{level:'medio'}),e=>e.code==='22023');
+  let entry=await reading('enter',{level:'facil'});assert.equal(entry.attempt.eventId,event.id);assert.equal(entry.attempt.level,'facil');
+  const easy=entry.attempt;await reading('stage',{id:easy.id,stage:'questoes'});await reading('answer',{id:easy.id,questionId:easy.activity.questions[0].id,selected:0});await reading('finish',{id:easy.id});
+  state=await reading('state');assert.equal(state.levels[0].complete,true);assert.equal(state.levels[1].unlocked,true);assert.ok(state.coinBalance>0);const earned=state.coinBalance;
+  entry=await reading('enter',{level:'medio'});const medium=entry.attempt;assert.equal(medium.level,'medio');
+  await db.exec('reset role');await db.query("update public.eventos_leitura set inicio=now()-interval '1 hour',fim=now() where id=$1",[event.id]);await identity(user);
+  state=await reading('state');assert.equal(state.eventSchedule.status,'ended');assert.ok(state.levels.every(l=>l.available===0));assert.equal(state.active,null);assert.equal(state.coinBalance,earned);
+  for(const op of ['get','page','stage','answer','finish'])await assert.rejects(reading(op,{id:medium.id,pageIndex:0,stage:'questoes',questionId:medium.activity.questions[0].id,selected:0}),e=>e.code==='22023');
+  assert.equal((await reading('get',{id:easy.id})).status,'completed');
+  assert.equal((await db.query('select public.clube_texto_permitido($1) allowed',[medium.activity.id])).rows[0].allowed,false);
+  await db.exec('reset role;commit');transaction=false;
+  const attemptCount=(await db.query('select count(*) amount from public.tentativas')).rows[0].amount;
+  await db.exec(installer);assert.equal((await db.query('select count(*) amount from public.tentativas')).rows[0].amount,attemptCount);
+ }finally{await db.close();}
+});
