@@ -162,3 +162,17 @@
 @media(max-width:480px){.level-ranking-podium{gap:6px}.level-podium-card{padding:12px 5px}.level-podium-card>strong{font-size:12px}.level-podium-card>b{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.is-celebrating .level-podium-card,.is-celebrating .level-ranking-list>li,.is-celebrating .level-points-total>strong{animation:none!important}}
 .club-app .reward-audio-waiting :is(.landscape-coin,.achievement-medal,.reward-sparkle,.achievement-confetti i){animation-play-state:paused!important}
+
+/* Keep the next action visible while the celebration content can scroll. */
+.club-app .level-achievement.reward-results{display:flex;flex-direction:column;height:100dvh;min-height:0;max-height:100dvh;overflow:hidden}
+.club-app .level-achievement.reward-results>.reward-header{flex:0 0 auto}
+.club-app .level-achievement.reward-results>.reward-body{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;justify-content:center;gap:16px;padding:clamp(16px,3dvh,32px) clamp(16px,4vw,64px)}
+.club-app .level-achievement.reward-results>.reward-next{position:relative;z-index:4;flex:0 0 auto;width:100%;max-width:none;box-sizing:border-box;margin:0;padding:12px clamp(16px,4vw,48px) max(12px,env(safe-area-inset-bottom));background:linear-gradient(#c4f1ffed,#e1f7ff);border-top:1px solid #ffffffb3;text-align:center}
+.club-app .level-achievement.reward-results>.reward-next>p{margin:0 auto 8px;max-width:80ch;line-height:1.4;font-size:14px}
+.club-app .level-achievement.reward-results>.reward-next .achievement-continue{width:min(100%,1100px);min-height:56px;margin:0 auto;padding:12px 20px;font-size:clamp(20px,2vw,28px)}
+.club-app .level-achievement.reward-results>.reward-next .achievement-later{display:block;margin:6px auto 0;min-height:36px}
+@media(max-height:550px){
+ .club-app .level-achievement.reward-results>.reward-next{padding-top:6px;padding-bottom:6px}
+ .club-app .level-achievement.reward-results>.reward-next .achievement-continue{min-height:48px;padding:8px 16px;font-size:20px}
+ .club-app .level-achievement.reward-results>.reward-next>p{font-size:12px;margin-bottom:4px}
+}
