@@ -71,3 +71,18 @@
 @media screen{
 .club-app .admin-modern .admin-content .management-dialog.story-editor{color-scheme:light;--ink:#19395e;--muted:#61758b;--line:#e2eaf3;--admin-border:#e0eafa;color:#19395e;background:#fff}
 }
+
+/* Compact access tools retain accessible names and contrast in both themes. */
+@media screen{
+.club-app .admin-modern .access-modal .access-card-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px}
+.club-app .admin-modern .access-modal .access-card-actions>:is(button,a){flex:0 0 48px;width:48px;height:48px;min-height:48px;padding:12px;color:#155bbd;background:#f3f7ff;border-color:#cbdcf4}
+.club-app .admin-modern .access-modal .access-card-actions>button.club-button{color:#fff;background:#1764d8;border-color:#1764d8}
+.club-app .admin-modern .access-modal .access-card-actions>button.access-regenerate{color:#805611;background:#fff9ed;border-color:#edd6a5}
+.club-app .admin-modern .access-modal .access-card-actions>button.access-close{color:#465d76;background:#fff;border-color:#d6dfe9}
+.club-app .admin-modern[data-theme=dark] .access-modal .access-card-actions>:is(button,a){color:#d9eaff;background:#203b59;border-color:#527295}
+.club-app .admin-modern[data-theme=dark] .access-modal .access-card-actions>button.club-button{color:#fff;background:#1764d8;border-color:#69a8ff}
+.club-app .admin-modern[data-theme=dark] .access-modal .access-card-actions>button.access-regenerate{color:#ffe0a0;background:#493b26;border-color:#92743e}
+.club-app .admin-modern[data-theme=dark] .access-modal .access-card-actions>button.access-close{color:#dfebff;background:#27364b;border-color:#62738c}
+.club-app .admin-modern .access-modal .access-card-actions>:is(button,a):hover{filter:brightness(1.12)}
+.club-app .admin-modern .access-modal .access-card-actions svg{width:22px;height:22px}
+}
