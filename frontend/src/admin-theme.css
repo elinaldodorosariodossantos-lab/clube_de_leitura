@@ -1,0 +1,73 @@
+/* The administrator's preference never changes student pages or story artwork. */
+@media screen{
+.club-app .admin-modern .admin-topbar-actions>.admin-theme-toggle{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:42px;height:42px;min-height:42px;padding:9px;border:1px solid #d6efff70;border-radius:50%;background:#ffffff12;color:#fff}
+.club-app .admin-modern .admin-topbar-actions>.admin-theme-toggle:hover{background:#ffffff28;color:#fff4ba}
+.club-app .admin-modern .admin-theme-toggle:focus-visible{outline:3px solid #ffe28a;outline-offset:3px}
+.club-app .admin-modern[data-theme=dark]:not(:where(.story-editor,.story-editor *)){color-scheme:dark;--ink:#e0ebfc;--muted:#a6b8d0;--line:#30445e;--admin-text:#e0ebfc;--admin-border:#30445e;--admin-surface:#192a41;--admin-raised:#20334c;--admin-soft:#142337;background:#0e1b2e;color:#e0ebfc}
+.club-app .admin-modern[data-theme=dark] .admin-content:not(:where(.story-editor,.story-editor *)){background:radial-gradient(ellipse at top right,#18314a,transparent 65%),#0e1b2e;scrollbar-color:#3d5573 #0e1b2e;color:#e0ebfc}
+.club-app .admin-modern[data-theme=dark] .admin-topbar:not(:where(.story-editor,.story-editor *)){background:linear-gradient(110deg,#103868,#15518a 60%,#216b9d)}
+.club-app .admin-modern[data-theme=dark] .admin-sidebar:not(:where(.story-editor,.story-editor *)){background:radial-gradient(ellipse at 0 80%,#14365d,transparent 50%),linear-gradient(155deg,#102e55,#0b203d)}
+.club-app .admin-modern[data-theme=dark] .admin-content :is(h1,h2,h3,h4,legend,dt):not(:where(.story-editor,.story-editor *)){color:#e0ebfc}
+.club-app .admin-modern[data-theme=dark] .admin-content :is(p,small,.cell-secondary,.admin-card-caption,.admin-dashboard-pending,.admin-overview-footer):not(:where(.story-editor,.story-editor *)){color:#a6b8d0}
+.club-app .admin-modern[data-theme=dark] .admin-content :is(.club-card,.admin-dashboard-card,.table-wrap,.school-module-table,.events-filters,.event-card,.event-panel,.management-dialog,.question-editor,.admin-journey-grid article,.student-new-school):not(:where(.story-editor,.story-editor *)){background:var(--admin-surface);border-color:var(--admin-border);box-shadow:0 4px 18px #00000015}
+.club-app .admin-modern[data-theme=dark] :is(.management-form fieldset,.question-editor,.story-main-fields,.book-page-editor,.book-pages-list,.student-new-school-panel):not(:where(.story-editor,.story-editor *)){background:var(--admin-soft);border-color:var(--admin-border)}
+.club-app .admin-modern[data-theme=dark] :is(input,select,textarea):not(:where(.story-editor,.story-editor *)){background:#122237;color:#e1edff;border-color:#415873;color-scheme:dark;box-shadow:none}
+.club-app .admin-modern[data-theme=dark] input:not(:where(.story-editor,.story-editor *))::placeholder,.club-app .admin-modern[data-theme=dark] textarea:not(:where(.story-editor,.story-editor *))::placeholder{color:#92a8c3}
+.club-app .admin-modern[data-theme=dark] :is(input,textarea,select):focus:not(:where(.story-editor,.story-editor *)){border-color:#79b9ff}
+.club-app .admin-modern[data-theme=dark] :is(label,.admin-filters>label,.management-form label,.events-heading p,.event-card>p):not(:where(.story-editor,.story-editor *)){color:#c2d3ea}
+.club-app .admin-modern[data-theme=dark] :is(th,td):not(:where(.story-editor,.story-editor *)){border-color:#2a405b;color:#c6d6ec;background:transparent}
+.club-app .admin-modern[data-theme=dark] :is(thead,th):not(:where(.story-editor,.story-editor *)){background:#20334c;color:#c7dcf7}
+.club-app .admin-modern[data-theme=dark] tbody tr:not(:where(.story-editor,.story-editor *)){background:transparent;border-color:#30445e}
+.club-app .admin-modern[data-theme=dark] tbody tr:hover:not(:where(.story-editor,.story-editor *)){background:#233a55}
+.club-app .admin-modern[data-theme=dark] :is(.schools-table-heading,.schools-table-scroll,.schools-filter-actions,.admin-highlight-grid article+article,.student-action-history):not(:where(.story-editor,.story-editor *)){border-color:#30445e}
+.club-app .admin-modern[data-theme=dark] .admin-content button:not(.club-button):not(.admin-banner-update button):not(:where(.story-editor,.story-editor *)){color:#b8d9ff}
+.club-app .admin-modern[data-theme=dark] .admin-content button:not(.club-button):hover:not(:where(.story-editor,.story-editor *)){background:#2c4564}
+.club-app .admin-modern[data-theme=dark] .club-button.secondary:not(:where(.story-editor,.story-editor *)){background:#20334c;border-color:#466486;color:#b4d9ff}
+.club-app .admin-modern[data-theme=dark] :is(.row-actions button,.row-actions a,.school-module-actions>button,.school-module-actions>a,.story-icon-actions button,.student-access-icon,.school-record-link):not(:where(.story-editor,.story-editor *)){background:#203650;border-color:#385578;color:#a8d1ff!important}
+.club-app .admin-modern[data-theme=dark] :is(.row-actions .student-delete,.story-icon-actions .story-delete,.school-module-actions .row-action-delete):not(:where(.story-editor,.story-editor *)){background:#482a37;border-color:#754151;color:#ffb3bc!important}
+.club-app .admin-modern[data-theme=dark] .management-status:not(:where(.story-editor,.story-editor *)){background:#174b40;color:#9ce9c3}
+.club-app .admin-modern[data-theme=dark] .management-status.inativo:not(:where(.story-editor,.story-editor *)){background:#314052;color:#bccadd}
+.club-app .admin-modern[data-theme=dark] .club-notice:not(:where(.story-editor,.story-editor *)){background:#18344f;border-color:#345e86;color:#c0dcfa}
+.club-app .admin-modern[data-theme=dark] .club-notice.is-error:not(:where(.story-editor,.story-editor *)){background:#452b32;border-color:#82505a;color:#ffc8c8}
+.club-app .admin-modern[data-theme=dark] .admin-content .admin-banner-copy :is(h1,p):not(:where(.story-editor,.story-editor *)){color:#fff}
+.club-app .admin-modern[data-theme=dark] .admin-banner-update:not(:where(.story-editor,.story-editor *)){background:#192e46f5;border-color:#4b6a8a;color:#d4e7ff}
+.club-app .admin-modern[data-theme=dark] .admin-banner-update :is(svg,button):not(:where(.story-editor,.story-editor *)){color:#a2d1ff}
+.club-app .admin-modern[data-theme=dark] .admin-content .admin-overview-metric :is(h2,strong,small):not(:where(.story-editor,.story-editor *)){color:#fff}
+.club-app .admin-modern[data-theme=dark] .admin-overview-metric.blue:not(:where(.story-editor,.story-editor *)){background:linear-gradient(115deg,#075fbf,#078ba7)}
+.club-app .admin-modern[data-theme=dark] .admin-overview-metric.green:not(:where(.story-editor,.story-editor *)){background:linear-gradient(115deg,#147d61,#2f9958)}
+.club-app .admin-modern[data-theme=dark] .admin-overview-metric.purple:not(:where(.story-editor,.story-editor *)){background:linear-gradient(115deg,#6035ad,#8453cd)}
+.club-app .admin-modern[data-theme=dark] .admin-overview-metric.gold:not(:where(.story-editor,.story-editor *)){background:linear-gradient(115deg,#ae650d,#bd8815)}
+.club-app .admin-modern[data-theme=dark] .admin-card-heading>a:not(:where(.story-editor,.story-editor *)),.club-app .admin-modern[data-theme=dark] .admin-highlight-grid a:not(:where(.story-editor,.story-editor *)){color:#8ac4ff}
+.club-app .admin-modern[data-theme=dark] .admin-chart-summary strong:not(:where(.story-editor,.story-editor *)){color:#8ac4ff}
+.club-app .admin-modern[data-theme=dark] .admin-registration-chart svg text:not(:where(.story-editor,.story-editor *)){fill:#a6b8d0}
+.club-app .admin-modern[data-theme=dark] .admin-registration-chart svg g>path:not(:where(.story-editor,.story-editor *)){stroke:#34485f}
+.club-app .admin-modern[data-theme=dark] .admin-registration-chart svg circle:not(:where(.story-editor,.story-editor *)){fill:#192a41;stroke:#77b7ff}
+.club-app .admin-modern[data-theme=dark] .admin-registration-chart svg polyline:not(:where(.story-editor,.story-editor *)){stroke:#77b7ff}
+.club-app .admin-modern[data-theme=dark] .admin-chart-empty:not(:where(.story-editor,.story-editor *)){background:linear-gradient(#192a41,#16263c);border-color:#30445e}
+.club-app .admin-modern[data-theme=dark] :is(.admin-chart-empty>span,.admin-chart-summary span,.admin-chart-table,.admin-recent-list time):not(:where(.story-editor,.story-editor *)){color:#a6b8d0}
+.club-app .admin-modern[data-theme=dark] .admin-recent-list a:not(:where(.story-editor,.story-editor *)){color:#d8eaff}
+.club-app .admin-modern[data-theme=dark] .admin-recent-list p>span:not(:where(.story-editor,.story-editor *)){color:#97acc7}
+.club-app .admin-modern[data-theme=dark] .admin-recent-icon:not(:where(.story-editor,.story-editor *)){background:#203e60;color:#9bcbff}
+.club-app .admin-modern[data-theme=dark] .admin-quick-actions h2:not(:where(.story-editor,.story-editor *)){color:#fff;background:linear-gradient(100deg,#16529a,#236a9f)}
+.club-app .admin-modern[data-theme=dark] .admin-quick-actions a.blue:not(:where(.story-editor,.story-editor *)){background:#203e60;color:#afd5ff}
+.club-app .admin-modern[data-theme=dark] .admin-quick-actions a.green:not(:where(.story-editor,.story-editor *)){background:#1b403a;color:#a0e3c8}
+.club-app .admin-modern[data-theme=dark] .admin-quick-actions a.purple:not(:where(.story-editor,.story-editor *)){background:#383059;color:#d4bfff}
+.club-app .admin-modern[data-theme=dark] .admin-quick-actions a.orange:not(:where(.story-editor,.story-editor *)){background:#493b26;color:#ffd294}
+.club-app .admin-modern[data-theme=dark] .admin-reading-invite:not(:where(.story-editor,.story-editor *)){background:linear-gradient(135deg,#453820,#594326);border-color:#705838}
+.club-app .admin-modern[data-theme=dark] .admin-reading-invite h2:not(:where(.story-editor,.story-editor *)){color:#ffe0a0}
+.club-app .admin-modern[data-theme=dark] .admin-reading-invite p:not(:where(.story-editor,.story-editor *)){color:#dfcaab}
+.club-app .admin-modern[data-theme=dark] .admin-reading-invite button:not(:where(.story-editor,.story-editor *)){color:#49330b!important;background:#ffd467!important}
+.club-app .admin-modern[data-theme=dark] .admin-tip:not(:where(.story-editor,.story-editor *)){background:linear-gradient(130deg,#203b5c,#1d3553);border-color:#355577}
+.club-app .admin-modern[data-theme=dark] .admin-tip :is(h2,blockquote):not(:where(.story-editor,.story-editor *)){color:#c7e2ff}
+.club-app .admin-modern[data-theme=dark] .admin-tip-book:not(:where(.story-editor,.story-editor *)){color:#345b84}
+.club-app .admin-modern[data-theme=dark] .admin-highlight-progress strong:not(:where(.story-editor,.story-editor *)){color:#aad2ff;white-space:nowrap}
+.club-app .admin-modern[data-theme=dark] .admin-highlight-progress progress:not(:where(.story-editor,.story-editor *))::-webkit-progress-bar{background:#334e6e}
+.club-app .admin-modern[data-theme=dark] .admin-highlight-progress progress:not(:where(.story-editor,.story-editor *)){background:#334e6e}
+.club-app .admin-modern[data-theme=dark] .admin-journey-grid article:not(:where(.story-editor,.story-editor *)),.club-app .admin-modern[data-theme=dark] .student-action-history:not(:where(.story-editor,.story-editor *)){background:#20334c}
+@media(max-width:520px){.club-app .admin-modern .admin-topbar-actions{gap:8px}.club-app .admin-modern .admin-topbar-actions>.admin-theme-toggle{width:38px;height:38px;min-width:38px;min-height:38px;padding:8px}.admin-greeting{flex:1}.admin-greeting div>span{max-width:185px}}
+}
+
+/* Preserve the original light story editor, including its paper preview. */
+@media screen{
+.club-app .admin-modern .admin-content .management-dialog.story-editor{color-scheme:light;--ink:#19395e;--muted:#61758b;--line:#e2eaf3;--admin-border:#e0eafa;color:#19395e;background:#fff}
+}

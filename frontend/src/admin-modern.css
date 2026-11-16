@@ -158,3 +158,11 @@
 @media(prefers-reduced-motion:reduce){.admin-refresh-spin{animation:none}.club-app .admin-modern .admin-sidebar{transition:none}}
 }
 @media print{.admin-modern .admin-sidebar,.admin-modern .admin-topbar,.admin-menu-backdrop{display:none!important}.admin-modern .admin-workspace{display:block!important}.admin-overview{color:#103b70}.admin-dashboard-grid{display:block}.admin-overview-metrics{display:grid;grid-template-columns:repeat(4,1fr)}.admin-overview-metric{color:#103b70;border:1px solid #bbb;padding:15px}.admin-overview-metric>strong{color:#103b70}}
+
+/* Reports stay scrollable without the extra vertical rail beside the content. */
+@media screen{
+ .club-app .admin-modern .admin-content.admin-reports-content,
+ html:has(.admin-reports-content),body:has(.admin-reports-content){scrollbar-width:none}
+ .club-app .admin-modern .admin-content.admin-reports-content::-webkit-scrollbar,
+ html:has(.admin-reports-content)::-webkit-scrollbar,body:has(.admin-reports-content)::-webkit-scrollbar{width:0}
+}

@@ -218,3 +218,31 @@
 .club-app .storybook-turn .storybook-sheet{height:100%}
 .club-app .storybook-reader{position:relative}
 .club-app .storybook-reader>.storybook-error{position:absolute;z-index:10;left:16px;right:16px;bottom:64px;margin:0;box-shadow:0 3px 12px #8d430d20}
+
+/* Reserve a complete control row below the cover and its raised paper edge. */
+.club-app .student-experience .reading-adventure.reading-focused.reader-viewport>.storybook-reader.physical-book{gap:18px}
+.club-app .storybook-reader>.storybook-navigation,
+.club-app .student-experience .reading-focused.reader-viewport .storybook-reader>.storybook-navigation{
+ position:relative;z-index:6;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+ flex:0 0 auto;align-items:center;gap:12px;width:100%;min-height:64px;
+ padding:6px max(8px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));
+ margin:0;border:0;box-sizing:border-box;isolation:isolate;
+}
+.club-app .storybook-reader>.storybook-navigation>.club-button{
+ display:inline-flex;align-items:center;justify-content:center;justify-self:start;
+ flex:none;width:max-content;max-width:100%;min-width:48px;height:48px;min-height:48px;
+ padding:8px 16px;margin:0;gap:8px;line-height:1.25;white-space:nowrap;box-sizing:border-box;
+}
+.club-app .storybook-reader>.storybook-navigation>.club-button:last-child{justify-self:end}
+.club-app .storybook-reader>.storybook-navigation>.club-button svg{display:block;flex-shrink:0;width:24px;height:24px}
+.club-app .storybook-reader>.storybook-navigation>.storybook-page-counter{
+ grid-column:2;grid-row:1;justify-self:center;align-self:center;min-width:0;max-width:100%;margin:0;
+ padding:8px 16px;font-size:14px;line-height:1.4;white-space:nowrap;box-sizing:border-box;
+}
+@media(max-width:480px){
+ .club-app .storybook-reader>.storybook-navigation,
+ .club-app .student-experience .reading-focused.reader-viewport .storybook-reader>.storybook-navigation{gap:8px}
+ .club-app .storybook-reader>.storybook-navigation>.club-button{width:48px;min-width:48px;padding:10px}
+ .club-app .storybook-reader>.storybook-navigation>.club-button>span{display:none}
+ .club-app .storybook-reader>.storybook-navigation>.storybook-page-counter{font-size:12px;padding:8px 12px}
+}
