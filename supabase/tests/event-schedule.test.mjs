@@ -35,7 +35,9 @@ test('event levels enforce schedule, school, age, sequence and preserve results'
   await identity(user);state=await reading('state');assert.equal(state.eventSchedule.status,'active');assert.equal(state.levels[0].available,1);assert.equal(state.levels[0].unlocked,true);assert.equal(state.levels[1].unlocked,false);
   await assert.rejects(reading('enter',{level:'medio'}),e=>e.code==='22023');
   let entry=await reading('enter',{level:'facil'});assert.equal(entry.attempt.eventId,event.id);assert.equal(entry.attempt.level,'facil');
-  const easy=entry.attempt;await reading('stage',{id:easy.id,stage:'questoes'});await reading('answer',{id:easy.id,questionId:easy.activity.questions[0].id,selected:0});await reading('finish',{id:easy.id});
+  const easy=entry.attempt;await reading('stage',{id:easy.id,stage:'questoes'});await reading('answer',{id:easy.id,questionId:easy.activity.questions[0].id,selected:0});const finishedEasy=await reading('finish',{id:easy.id});const achievementId=finishedEasy.achievementId;assert.ok(achievementId);
+  await rpc('clube_leitura','achievement_claim',{id:achievementId});assert.equal((await rpc('clube_leitura','achievement_claim',{id:achievementId})).achievement,null);
+  assert.equal((await reading('get',{id:easy.id})).achievementId,achievementId);assert.equal((await reading('finish',{id:easy.id})).achievementId,achievementId);
   state=await reading('state');assert.equal(state.levels[0].complete,true);assert.equal(state.levels[1].unlocked,true);assert.ok(state.coinBalance>0);const earned=state.coinBalance;
   entry=await reading('enter',{level:'medio'});const medium=entry.attempt;assert.equal(medium.level,'medio');
   await db.exec('reset role');await db.query("update public.eventos_leitura set inicio=now()-interval '1 hour',fim=now() where id=$1",[event.id]);await identity(user);
@@ -43,6 +45,12 @@ test('event levels enforce schedule, school, age, sequence and preserve results'
   for(const op of ['get','page','stage','answer','finish'])await assert.rejects(reading(op,{id:medium.id,pageIndex:0,stage:'questoes',questionId:medium.activity.questions[0].id,selected:0}),e=>e.code==='22023');
   assert.equal((await reading('get',{id:easy.id})).status,'completed');
   assert.equal((await db.query('select public.clube_texto_permitido($1) allowed',[medium.activity.id])).rows[0].allowed,false);
+  // A historical journey and an event of the same level must resolve different results.
+  await db.exec('reset role');const journey=(await db.query('select id from public.jornadas where aluno_id=$1 order by ciclo desc limit 1',[student.id])).rows[0].id;
+  const legacyAttempt=randomUUID(),legacyAchievement=randomUUID();
+  await db.query("insert into public.tentativas(id,aluno_id,jornada_id,texto_id,nivel,status,etapa,concluida_em,acertos,pontuacao,percentual) values($1,$2,$3,'schedule-facil','facil','completed','resultado',now(),0,0,0)",[legacyAttempt,student.id,journey]);
+  await db.query("insert into clube_private.conquistas_niveis(id,aluno_id,contexto_id,evento,nivel,pontos) values($1,$2,$3,false,'facil',0)",[legacyAchievement,student.id,journey]);
+  await identity(user);assert.equal((await reading('get',{id:legacyAttempt})).achievementId,legacyAchievement);assert.equal((await reading('get',{id:easy.id})).achievementId,achievementId);
   await db.exec('reset role;commit');transaction=false;
   const attemptCount=(await db.query('select count(*) amount from public.tentativas')).rows[0].amount;
   await db.exec(installer);assert.equal((await db.query('select count(*) amount from public.tentativas')).rows[0].amount,attemptCount);

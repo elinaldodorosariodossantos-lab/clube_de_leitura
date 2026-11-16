@@ -1,3 +1,4 @@
+import type {ReadingAttempt} from '../types/portal';
 export type ReadingResultRoute={kind:'level'|'journey';id:string;nextJourneyId?:string};
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export function readingResultPath(result:ReadingResultRoute){
@@ -9,4 +10,10 @@ export function parseReadingResultRoute(page:string):ReadingResultRoute|undefine
  if(extra!==undefined||!uuid.test(id??'')||(kind!=='conquista'&&kind!=='conclusao'))return;
  const next=new URLSearchParams(query).get('conclusao');
  return {kind:kind==='conquista'?'level':'journey',id,...(kind==='conquista'&&next&&uuid.test(next)?{nextJourneyId:next}:{})};
+}
+export function resultRouteForAttempt(attempt:ReadingAttempt):ReadingResultRoute|undefined{
+ if(attempt.status!=='completed')return;
+ if(attempt.level==='dificil'&&attempt.journeyCompletionId)return {kind:'journey',id:attempt.journeyCompletionId};
+ if(attempt.achievementId)return {kind:'level',id:attempt.achievementId,...(attempt.journeyCompletionId?{nextJourneyId:attempt.journeyCompletionId}:{})};
+ if(attempt.journeyCompletionId)return {kind:'journey',id:attempt.journeyCompletionId};
 }

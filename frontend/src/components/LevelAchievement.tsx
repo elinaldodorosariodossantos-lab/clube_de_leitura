@@ -1,7 +1,7 @@
 import {useCoinCelebration} from '../hooks/useCoinCelebration';
 import {formatPoints as number} from '../services/format';
 import {useEffect,useRef,useState,type CSSProperties} from 'react';
-import {ArrowRight,BookOpen,CheckCircle2,Coins,LogOut,Star,UserRound} from 'lucide-react';
+import {ArrowRight,BookOpen,CheckCircle2,LogOut,Star,UserRound} from 'lucide-react';
 import {useModalFocus} from '../hooks/useModalFocus';
 import {levelNames} from './ReadingLevels';
 import {GoldCoin,RewardTrophy} from './RewardArtwork';
@@ -24,7 +24,6 @@ export function LevelAchievement({achievement:a,celebrate=false,studentName,busy
    <div className="achievement-medal"><RewardTrophy/></div>
    <div className="reward-hero"><span className="reward-complete"><CheckCircle2/>{`Nível ${levelNames[a.level]} concluído`}</span><h1 id="achievement-title">Parabéns!</h1><p id="achievement-message">{message??'Todas as leituras e atividades foram concluídas. Suas conquistas estão salvas!'}</p>
     <div className="reward-coins"><span className="coin-stack" aria-hidden="true"><GoldCoin/><GoldCoin/><GoldCoin/></span><div><strong>{modern?`${new Intl.NumberFormat('pt-BR',{maximumFractionDigits:2}).format(displayed.coins)} moedas`:`${number(displayed.points)} pontos`}</strong></div><Star className="reward-sparkle" aria-hidden="true"/></div>
-    <span className="reward-balance"><Coins size={19}/>Seu saldo: <strong>{number(a.coinBalance??0)} moedas</strong></span>
    </div>
   </div>
    <footer className="reward-next">{next?<p>Próxima etapa: nível <strong>{next}</strong>. Você pode parar e voltar depois; seu progresso fica salvo.</p>:<><div className="achievement-unlock"><CheckCircle2/><strong>Jornada concluída!</strong></div><p>Você concluiu os níveis disponíveis para você. Suas conquistas estão salvas!</p></>}{error&&<p role="alert" className="achievement-error">{error}</p>}<button className="club-button achievement-continue" disabled={busy} onClick={onContinue}>{busy?'Abrindo sua próxima etapa…':next?'Avançar':'Ver meu progresso'}<ArrowRight size={27}/></button>{next&&<button className="achievement-later" disabled={busy} onClick={onClose}>Continuar depois</button>}</footer>

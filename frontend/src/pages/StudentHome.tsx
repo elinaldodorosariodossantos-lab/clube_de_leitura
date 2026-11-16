@@ -1,3 +1,4 @@
+import {resultRouteForAttempt} from '../services/reading-result-route';
 import type {ReadingResultRoute} from '../services/reading-result-route';
 import {JourneyCompletion} from '../components/JourneyCompletion';
 import type {JourneyCompletionData} from '../types/portal';
@@ -54,14 +55,43 @@ export function StudentHome({resultRoute,onOpenResult,level,student,code,tab,att
   return()=>{cancelled=true;};
  },[reading.loading,reading.state,attemptId,level,tab,resultRoute?.id]);
  useEffect(()=>{if(!level){entered.current=undefined;return;}if(entered.current===level)return;entered.current=level;void start(level);},[level]);
- async function claimAchievement(id:string){if(claiming.current===id)return;claiming.current=id;setAchievementError('');try{const r=await portalApi<{achievement:LevelAchievementData|null}>('/reading/achievements/'+id+'/claim',{});setCelebrateAchievement(true);setAchievement(r.achievement);if(r.achievement)onOpenResult({kind:'level',id,nextJourneyId:pendingJourneyFinal.current??undefined});}catch(e){claiming.current=null;setAchievementError((e as Error).message);}}
+ async function claimAchievement(id:string){
+  if(claiming.current===id)return;claiming.current=id;setAchievementError('');
+  try{
+   const claimed=await portalApi<{achievement:LevelAchievementData|null}>('/reading/achievements/'+id+'/claim',{});
+   const data=claimed.achievement?claimed:await portalApi<{achievement:LevelAchievementData}>('/reading/achievements/'+id);
+   if(!data.achievement)throw new Error('Nao foi possivel abrir sua conquista. Tente novamente.');
+   setCelebrateAchievement(!!claimed.achievement);setAchievement(data.achievement);
+   onOpenResult({kind:'level',id,nextJourneyId:pendingJourneyFinal.current??undefined});
+  }catch(e){claiming.current=null;setAchievementError((e as Error).message);}
+ }
  async function reviewAchievement(a:LevelAchievementData){pendingJourneyFinal.current=null;setCelebrateAchievement(false);setAchievement(a);onOpenResult({kind:'level',id:a.id});setAchievementBusy(true);setAchievementError('');try{const result=await portalApi<{achievement:LevelAchievementData}>('/reading/achievements/'+a.id);setAchievement(result.achievement);}catch(e){setAchievementError((e as Error).message);}finally{setAchievementBusy(false);}}
  function closeAchievement(){pendingJourneyFinal.current=null;setAchievement(null);setAchievementError('');onNavigate('progress');void reading.refreshState();}
  async function continueAchievement(){if(!achievement||achievementBusy)return;setAchievementBusy(true);setAchievementError('');try{const r=await portalApi<{achievement:LevelAchievementData}>('/reading/achievements/'+achievement.id+'/continue',{});if(r.achievement.nextLevel){const opened=r.achievement.eventId?await startEvent(r.achievement.eventId):await start(r.achievement.nextLevel);if(!opened)throw new Error('Não foi possível abrir sua próxima leitura. Tente novamente.');}else if(pendingJourneyFinal.current){if(!await openFinal(pendingJourneyFinal.current,true))return;pendingJourneyFinal.current=null;}else onNavigate('progress');setAchievement(null);}catch(e){setAchievementError((e as Error).message);}finally{setAchievementBusy(false);}}
  function download(){const blob=new Blob([`Clube da Leitura 2026\nCódigo individual: ${code}\nGuarde este código com cuidado. Ele dá acesso ao seu cadastro.\n`],{type:'text/plain;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='meu-codigo-clube-da-leitura.txt';a.click();URL.revokeObjectURL(url);setSaved(true);}
  async function start(level:ReadingLevel){retryLevel.current=level;setEntryNotice('');const result=await reading.enter(level);if(!result)return false;retryLevel.current=undefined;if(result.attempt){onOpenAttempt(result.attempt.id);return true;}setEntryNotice(result.journeyComplete?'Jornada concluída! Seus resultados estão salvos.':result.levelComplete?'Nível concluído! Confira os níveis desbloqueados para continuar.':'Novas histórias estarão disponíveis em breve.');return false;}
  async function startEvent(id:string){if(eventBusy)return false;setEventBusy(true);setEntryNotice('');try{const result=await eventApi<{attempt:ReadingAttempt|null;complete:boolean}>('/'+id+'/enter','POST',{});if(result.attempt){onOpenAttempt(result.attempt.id);return true;}else{setEntryNotice('Evento concluído! Suas leituras e seus pontos estão salvos.');onNavigate('home');return false;}}catch(e){setEntryNotice((e as Error).message);return false;}finally{setEventBusy(false);}}
- async function finish(){if(finishingAttempt)return;setFinishingAttempt(reading.attempt??null);try{const result=await reading.finish();if(result){if(result.achievementId){pendingJourneyFinal.current=result.journeyCompletionId??null;pendingCelebration.current={kind:'level',id:result.achievementId};await claimAchievement(result.achievementId);return;}if(result.journeyCompletionId){pendingCelebration.current={kind:'journey',id:result.journeyCompletionId};await openFinal(result.journeyCompletionId,true);return;}if(result.eventId)await startEvent(result.eventId);else await start(result.level);}}finally{setFinishingAttempt(null);}}
+ async function finish(){
+  if(finishingAttempt)return;setFinishingAttempt(reading.attempt??null);
+  try{
+   let result=await reading.finish();if(!result)return;
+   if(result.status==='completed'&&!result.achievementId&&!result.journeyCompletionId){
+    const saved=await portalApi<ReadingAttempt>('/reading/attempts/'+result.id+'?result=1');
+    result={...result,...saved};
+   }
+   if(result.level==='dificil'&&result.journeyCompletionId){
+    pendingCelebration.current={kind:'journey',id:result.journeyCompletionId};
+    await openFinal(result.journeyCompletionId,true);return;
+   }
+   if(result.achievementId){
+    pendingJourneyFinal.current=result.journeyCompletionId??null;pendingCelebration.current={kind:'level',id:result.achievementId};
+    await claimAchievement(result.achievementId);return;
+   }
+   if(result.journeyCompletionId){pendingCelebration.current={kind:'journey',id:result.journeyCompletionId};await openFinal(result.journeyCompletionId,true);return;}
+   if(result.eventId)await startEvent(result.eventId);else await start(result.level);
+  }catch(e){setAchievementError((e as Error).message);}
+  finally{setFinishingAttempt(null);}
+ }
  const [resultReload,setResultReload]=useState(0);
  useEffect(()=>{
   if(!resultRoute){setAchievement(null);setFinalJourney(null);return;}
@@ -71,26 +101,60 @@ export function StudentHome({resultRoute,onOpenResult,level,student,code,tab,att
   const path=resultRoute.kind==='level'?'/reading/achievements/':'/reading/journeys/';
   void portalApi<{achievement?:LevelAchievementData;completion?:JourneyCompletionData}>(path+resultRoute.id).then(data=>{
    if(cancelled)return;
-   if(resultRoute.kind==='level'&&data.achievement){setCelebrateAchievement(false);setAchievement(data.achievement);}
+   if(resultRoute.kind==='level'&&data.achievement){
+    if(data.achievement.level==='dificil'&&resultRoute.nextJourneyId){onOpenResult({kind:'journey',id:resultRoute.nextJourneyId});return;}
+    setCelebrateAchievement(false);setAchievement(data.achievement);
+   }
    else if(resultRoute.kind==='journey'&&data.completion){setCelebrateFinal(false);setFinalJourney(data.completion);}
    else throw new Error('Resultado indisponivel. Tente novamente.');
   }).catch(e=>{if(!cancelled)setAchievementError((e as Error).message);}).finally(()=>{if(!cancelled)setAchievementBusy(false);});
   return()=>{cancelled=true;};
  },[resultRoute?.kind,resultRoute?.id,resultRoute?.nextJourneyId,resultReload]);
+ // Refresh an open final ranking when participants are removed by administration.
+ useEffect(()=>{
+  if(resultRoute?.kind!=='journey')return;
+  let cancelled=false,fetching=false;
+  const sync=async()=>{
+   if(fetching||document.visibilityState==='hidden')return;fetching=true;
+   try{const response=await portalApi<{completion:JourneyCompletionData}>('/reading/journeys/'+resultRoute.id);
+    if(!cancelled)setFinalJourney(current=>current?.id===resultRoute.id?response.completion:current);
+   }catch{/* Keep the current view on a temporary connection failure. */}
+   finally{fetching=false;}
+  };
+  const focus=()=>{void sync();};window.addEventListener('focus',focus);document.addEventListener('visibilitychange',focus);
+  const timer=setInterval(focus,15000);
+  return()=>{cancelled=true;clearInterval(timer);window.removeEventListener('focus',focus);document.removeEventListener('visibilitychange',focus);};
+ },[resultRoute?.kind,resultRoute?.id]);
  const recoveredAttempt=useRef<string|null>(null);
  useEffect(()=>{
   const attempt=reading.attempt;
-  if(resultRoute||achievement||finalJourney||finishingAttempt||reading.loading||!reading.state||attempt?.status!=='completed'||recoveredAttempt.current===attempt.id)return;
-  recoveredAttempt.current=attempt.id;
-  const saved=attempt.eventId?reading.state.achievements?.find(item=>item.eventId===attempt.eventId&&item.level===attempt.level):undefined;
-  if(saved)onOpenResult({kind:'level',id:saved.id});else onNavigate('progress');
- },[reading.attempt,reading.state,reading.loading,finishingAttempt,resultRoute?.id,achievement,finalJourney]);
+  if(resultRoute||achievement||finalJourney||finishingAttempt||reading.loading||attempt?.status!=='completed'||recoveredAttempt.current===attempt.id)return;
+  recoveredAttempt.current=attempt.id;let cancelled=false;
+  setAchievementError('');
+  void (async()=>{
+   const direct=resultRouteForAttempt(attempt);
+   if(direct){if(!cancelled)onOpenResult(direct);return;}
+   // Read the completed attempt's own context, not an older in-flight state response.
+   const saved=await portalApi<ReadingAttempt>('/reading/attempts/'+attempt.id+'?result=1');
+   let route=resultRouteForAttempt(saved);
+   if(!route&&saved.eventId){
+    const fresh=await portalApi<import('../types/portal').ReadingState>('/reading/state?result='+attempt.id);
+    const existing=fresh.achievements?.find(item=>item.eventId===saved.eventId&&item.level===saved.level);
+    if(existing)route={kind:'level',id:existing.id};
+   }
+   if(!route)throw new Error('Nao foi possivel localizar a conquista deste nivel. Seu progresso esta salvo.');
+   if(!cancelled)onOpenResult(route);
+  })().catch(e=>{if(!cancelled)setAchievementError((e as Error).message);});
+  return()=>{cancelled=true;};
+ },[reading.attempt,reading.loading,finishingAttempt,resultRoute?.id,achievement,finalJourney,resultReload]);
+ function retryResult(){recoveredAttempt.current=null;setResultReload(n=>n+1);}
+
  const eventBlocked=reading.state?.eventSchedule&&reading.attempt?.status!=='completed'&&(reading.state.eventSchedule.status!=='active'||(reading.attempt&&reading.attempt.eventId!==reading.state.eventSchedule.eventId));
  const levels=<ReadingLevels state={reading.state} busy={reading.busy||reading.loading} onStart={level=>void start(level)} onResume={()=>{if(reading.state?.active)onOpenAttempt(reading.state.active.id);}}/>;
  return <div className="student-experience">{finalJourney&&<JourneyCompletion data={finalJourney} celebrate={celebrateFinal} onHome={()=>closeFinal('home')} onProgress={()=>closeFinal('progress')}/>}{achievement&&<LevelAchievement key={achievement.id} celebrate={celebrateAchievement} studentName={current.name} onLogout={()=>void onLogout()} achievement={achievement} busy={achievementBusy} error={achievementError} onContinue={()=>void continueAchievement()} onClose={closeAchievement}/>}
  <header className="student-blue-header"><a className="student-brand" href="#/leitura"><span><BookOpen size={30}/></span><strong>Clube da Leitura <small>2026</small></strong></a><div className="student-header"><CoinWallet balance={reading.state?.coinBalance}/><button aria-label="Meu perfil" onClick={()=>onNavigate('profile')}><UserRound size={21}/><span>Olá, {current.name.split(' ')[0]}!</span></button><button aria-label="Sair ou trocar de aluno" onClick={()=>void onLogout()}><LogOut size={18}/><span>Sair</span></button></div></header>
 
- <div className="student-page"> <main className="portal-content">{!resultRoute&&!achievement&&achievementError&&<Notice error>{achievementError}<button onClick={()=>{const pending=pendingCelebration.current;if(!pending)return;if(pending.kind==='journey')void openFinal(pending.id,true);else void claimAchievement(pending.id);}}>Tentar abrir conquista novamente</button></Notice>}{entryNotice&&<Notice>{entryNotice}<button onClick={()=>onNavigate('home')}>Escolher nível</button><button onClick={()=>onNavigate('progress')}>Revisar meus resultados</button></Notice>}{level&&!entryNotice&&!reading.error&&<Notice>Abrindo sua leitura na sequência salva…</Notice>}{reading.error&&<Notice error>{reading.error}<button onClick={()=>void (retryLevel.current?start(retryLevel.current):reading.refresh())} disabled={reading.busy}>Tentar novamente</button></Notice>}
+ <div className="student-page"> <main className="portal-content">{!resultRoute&&!achievement&&achievementError&&<Notice error>{achievementError}<button onClick={()=>{const pending=pendingCelebration.current;if(!pending){retryResult();return;}if(pending.kind==='journey')void openFinal(pending.id,true);else void claimAchievement(pending.id);}}>Tentar abrir conquista novamente</button></Notice>}{entryNotice&&<Notice>{entryNotice}<button onClick={()=>onNavigate('home')}>Escolher nível</button><button onClick={()=>onNavigate('progress')}>Revisar meus resultados</button></Notice>}{level&&!entryNotice&&!reading.error&&<Notice>Abrindo sua leitura na sequência salva…</Notice>}{reading.error&&<Notice error>{reading.error}<button onClick={()=>void (retryLevel.current?start(retryLevel.current):reading.refresh())} disabled={reading.busy}>Tentar novamente</button></Notice>}
  {resultRoute?<>{!achievement&&!finalJourney&&<Notice error={!!achievementError}>{achievementError||'Abrindo sua conquista salva...'}{achievementError&&<button className="club-button" onClick={()=>setResultReload(n=>n+1)}>Tentar novamente</button>}<button className="club-button secondary" onClick={()=>onNavigate('progress')}>Voltar ao meu progresso</button></Notice>}</>:attemptId?<>{eventBlocked?<Notice>{eventScheduleMessage(reading.state?.eventSchedule)||'Esta leitura não pertence ao evento aberto. Volte aos níveis para continuar.'}<button className="club-button" onClick={()=>onNavigate('home')}>Voltar aos níveis</button></Notice>:reading.attempt?.status==='completed'&&!finishingAttempt?<Notice>Abrindo seus resultados salvos...</Notice>:reading.attempt?<ReadingActivity attempt={finishingAttempt??reading.attempt} busy={!!finishingAttempt||reading.busy||eventBusy} onPage={async p=>{const result=await reading.page(p);if(!result)throw new Error('Não foi possível salvar a página.');return result;}} onStage={s=>void reading.stage(s)} onAnswer={(q,s)=>void reading.answer(q,s)} onFinish={()=>void finish()} onBack={()=>onNavigate('home')}/>:!reading.error&&<Notice>Abrindo sua atividade salva…</Notice>}{reading.error&&!reading.attempt&&<button className="club-button secondary" onClick={()=>onNavigate('home')}>Voltar aos níveis</button>}</>:<>
  {(tab==='home'||tab==='journey')&&<>{welcomeVisible?<section className="student-login-welcome" aria-label="Boas-vindas"><WelcomeBanner name={current.name} state={reading.state} loading={reading.loading}/><p className="welcome-transition" role="status">Preparando seus níveis de leitura…</p></section>:<>{levels}<button className="results-link" onClick={()=>onNavigate('progress')}>Ver minhas leituras e resultados</button></>}</>}
  {tab==='progress'&&<><button className="reading-back" onClick={()=>onNavigate('home')}>Voltar aos níveis</button><h1>Meu progresso</h1><div className="stat-grid"><article className="club-card"><BookOpen/><strong>{current.completed}</strong><span>Leituras concluídas</span></article><article className="club-card"><Star/><strong>{formatPoints(current.points)}</strong><span>Pontos registrados</span></article></div><section className="club-card"><h2>Pontuação por nível</h2>{reading.state?.scoresByLevel?.map(s=><div className="reading-history-row" key={s.level}><span><strong>Nível {levelNames[s.level]}</strong>{s.readingPoints!=null&&s.questionPoints!=null&&<small>Leituras: {formatPoints(s.readingPoints)} pontos · Questões: {formatPoints(s.questionPoints)} pontos</small>}</span><strong>{formatPoints(s.points)} pontos</strong></div>)}</section><section className="club-card"><h2>Jornadas concluídas e certificados</h2>{reading.state?.journeyCompletions?.length?reading.state.journeyCompletions.map(j=><button className="reading-history-row" key={j.id} onClick={()=>void openFinal(j.id)}><Star/><span><strong>{j.eventName??'Minha jornada de leitura'}</strong><small>{new Date(j.completedAt).toLocaleDateString('pt-BR',{timeZone:'America/Fortaleza'})}</small></span><strong>{formatPoints(j.points)} pontos</strong><span>Ver conclusão e certificado</span></button>):<p>Seu certificado ficará disponível quando todas as atividades dos níveis habilitados estiverem concluídas.</p>}</section><section className="club-card"><h2>Minhas recompensas</h2><p>Saldo confirmado: <strong>{reading.state?.coinBalance===undefined?'—':formatPoints(reading.state.coinBalance)} moedas</strong></p>{reading.state?.achievements?.map(a=><button key={a.id} className="reading-history-row" onClick={()=>void reviewAchievement(a)}><Star/><span><strong>Nível {levelNames[a.level]}</strong><small>{a.readingPoints!==undefined&&a.questionPoints!==undefined?`Leituras: ${formatPoints(a.readingPoints)} pontos · Questões: ${formatPoints(a.questionPoints)} pontos`:(a.scoreVersion??1)>=2?'Pontuação e recompensa confirmadas':'Resultado histórico'}</small></span><strong>{a.points.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}{a.maxPoints?' / '+a.maxPoints.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}):''} pontos</strong><span>Ver conquista</span></button>)}</section><section className="club-card"><h2>Minhas leituras e resultados</h2>{reading.loading?<Notice>Carregando seu histórico…</Notice>:reading.state?.history.length?reading.state.history.map(a=><button key={a.id} className="reading-history-row" onClick={()=>onOpenAttempt(a.id)}><BookOpen size={21}/><span><strong>{a.title}</strong><small>{levelNames[a.level]} · {a.cycle?`Jornada ${a.cycle}`:'Histórico anterior'} · {new Date(a.completedAt).toLocaleDateString('pt-BR',{timeZone:'America/Fortaleza'})}</small></span><strong>{formatPoints(a.points)} pontos</strong><span>Ver resultados</span></button>):<Notice>Suas primeiras conquistas aparecerão aqui ao concluir uma leitura.</Notice>}</section></>}

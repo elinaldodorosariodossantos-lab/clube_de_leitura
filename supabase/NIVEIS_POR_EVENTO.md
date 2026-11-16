@@ -15,3 +15,9 @@ Com eventos simultâneos, apresenta um evento por vez: prioriza o primeiro com h
 Não requer publicar novamente a Edge Function: as rotas atuais de leitura continuam sendo usadas. A validação ocorre nos RPCs do Supabase, inclusive para URLs abertas diretamente.
 
 Verificação local: `node --test supabase/tests/event-schedule.test.mjs supabase/tests/automatic-distribution.test.mjs` e `node --test frontend/event-schedule.test.mjs`.
+
+## Resultado correto ao concluir o nível
+
+Antes de publicar a correção da recuperação de conquistas, aplique também `migrations/202611130002_resultado_por_tentativa.sql` (ou o instalador completo). Ela acrescenta os identificadores da conquista e da conclusão às respostas de consulta/finalização de uma tentativa concluída. A busca usa o aluno, o contexto e o nível da própria tentativa, evitando confundir jornadas antigas com eventos do mesmo nível.
+
+O frontend consulta a conquista salva se ela já foi apresentada ou se a lista geral de progresso ainda estiver desatualizada. Atualizar a página continua sendo somente leitura, sem repetir reivindicações, pontuação ou moedas.
