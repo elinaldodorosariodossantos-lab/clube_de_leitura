@@ -1,0 +1,12 @@
+/* The existing editor uses the administrative workspace instead of a dialog. */
+.club-app .story-editor-screen{width:100%;min-width:0}
+.club-app .story-editor-back{margin:0 0 16px}
+.club-app .admin-modern .admin-content .management-dialog.story-editor.story-editor-page{width:100%;max-width:none;max-height:none;height:auto;overflow:visible;margin:0;padding:clamp(16px,2.5vw,36px);border:1px solid #dce8f7;border-radius:24px;box-shadow:0 8px 28px #163c6810}
+.club-app .story-editor-page .story-form-heading h1{margin:0;font-size:clamp(24px,2.4vw,34px);line-height:1.2;overflow-wrap:anywhere}
+.club-app .story-editor-page .story-form-heading h1:focus{outline:none}
+.club-app .story-editor-page fieldset{min-width:0}
+@media(max-width:600px){
+ .club-app .admin-modern .admin-content .management-dialog.story-editor.story-editor-page{padding:16px;border-radius:16px}
+ .club-app .story-editor-page .story-form-heading{align-items:flex-start;flex-wrap:wrap;gap:16px}
+ .club-app .story-editor-page .management-actions{flex-wrap:wrap}
+}

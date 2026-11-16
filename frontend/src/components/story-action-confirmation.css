@@ -1,0 +1,14 @@
+.story-confirm-overlay{position:fixed;inset:0;z-index:1500;display:grid;place-items:center;padding:20px;background:#08274c80;backdrop-filter:blur(5px);overflow:auto}
+.story-confirm-card{box-sizing:border-box;width:min(100%,480px);max-height:calc(100dvh - 40px);overflow:auto;padding:30px;border:1px solid #dce7f7;border-radius:24px;background:#fff;color:#19395e;box-shadow:0 24px 80px #08274c40;font-family:inherit}
+.story-confirm-icon{display:grid;place-items:center;width:54px;height:54px;border-radius:16px;background:#eaf3ff;color:#0865df}
+.story-confirm-icon.is-danger{background:#fff0f0;color:#c42f38}
+.story-confirm-card h2{margin:20px 0 10px;font-size:26px;line-height:1.25}
+.story-confirm-name{margin:0 0 12px;font-weight:700;overflow-wrap:anywhere}
+.story-confirm-card #story-confirm-description{margin:0;color:#5a6f89;line-height:1.6}
+.story-confirm-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:26px;flex-wrap:wrap}
+.story-confirm-actions button{min-height:46px;padding:10px 18px;border:1px solid #c8dafa;border-radius:12px;background:#f6f9ff;color:#214974;font:inherit;font-weight:700;cursor:pointer}
+.story-confirm-actions .story-confirm-submit{background:#0865df;border-color:#0865df;color:#fff}
+.story-confirm-actions .is-danger{background:#c42f38;border-color:#c42f38}
+.story-confirm-actions button:disabled{opacity:.6;cursor:wait}
+.story-confirm-actions button:focus-visible{outline:3px solid #69aeff;outline-offset:3px}
+@media(max-width:480px){.story-confirm-card{padding:22px}.story-confirm-actions button{flex:1 1 100%}.story-confirm-actions{flex-direction:column-reverse}}

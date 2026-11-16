@@ -8,7 +8,7 @@ import {AdminBookMark,AdminLandscape} from '../components/AdminArtwork';
 import {AdminRegistrationChart} from '../components/AdminRegistrationChart';
 import {overviewReaderHighlights,readingTips,overviewDay} from '../services/admin-overview';
 import type {AdminSummary} from '../types/admin';
-import {adminPaths} from '../services/adminRoutes';
+import {adminPaths,adminNewStoryPath} from '../services/adminRoutes';
 
 export function AdminOverview(){
  const {data,loading,error,reload}=useAdminResource<AdminSummary>('/admin/overview');
@@ -19,7 +19,7 @@ export function AdminOverview(){
  const tipDay=overviewDay(data?.updatedAt??new Date().toISOString())??'2026-01-01';
  const tip=readingTips[(Math.floor(Date.parse(tipDay+'T12:00:00Z')/86400000)+tipOffset)%readingTips.length];
  const refresh=()=>{void reload();void readers.reload();};
- const quickActions=[{label:'Cadastrar História',path:adminPaths.stories,Icon:BookOpen,tone:'blue'},{label:'Gerenciar Alunos',path:adminPaths.students,Icon:Users,tone:'green'},{label:'Criar Evento',path:adminPaths.events,Icon:CalendarDays,tone:'purple'},{label:'Ver Relatórios',path:adminPaths.reports,Icon:ChartNoAxesCombined,tone:'orange'}];
+ const quickActions=[{label:'Cadastrar História',path:adminNewStoryPath,Icon:BookOpen,tone:'blue'},{label:'Gerenciar Alunos',path:adminPaths.students,Icon:Users,tone:'green'},{label:'Criar Evento',path:adminPaths.events,Icon:CalendarDays,tone:'purple'},{label:'Ver Relatórios',path:adminPaths.reports,Icon:ChartNoAxesCombined,tone:'orange'}];
  return <div className="admin-overview">
  <section className="admin-overview-banner" aria-labelledby="overview-title"><AdminLandscape/><div className="admin-banner-book"><AdminBookMark/></div><div className="admin-banner-copy"><span>PAINEL DO CLUBE</span><h1 id="overview-title">Visão geral</h1><p>Acompanhe o desempenho e<br className="admin-banner-break"/> as atividades do clube.</p></div></section>
  <AdminQueryState loading={loading&&!data} error={error} onRetry={refresh}/>

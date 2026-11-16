@@ -1,8 +1,13 @@
 import type {AdminTab} from '../types/admin';
 export const adminPaths:Record<AdminTab,string>={overview:'admin/visao-geral',students:'admin/alunos',events:'admin/eventos',stories:'admin/historias',schools:'admin/escolas',reports:'admin/relatorios',access:'admin/acessos',settings:'admin/configuracoes'};
-export function parseAdminRoute(route:string):{tab:AdminTab;studentId?:string;schoolId?:string;classId?:string;schoolSection?:'list'|'classes'|'dashboard';notFound?:boolean}{
+export const adminNewStoryPath='admin/historias/nova';
+export const adminEditStoryPath=(id:string)=>'admin/historias/editar/'+encodeURIComponent(id);
+export function parseAdminRoute(route:string):{tab:AdminTab;studentId?:string;schoolId?:string;classId?:string;storyId?:string;newStory?:boolean;schoolSection?:'list'|'classes'|'dashboard';notFound?:boolean}{
  if(route==='admin'||route==='admin/entrar')return {tab:'overview'};
  for(const [tab,path] of Object.entries(adminPaths))if(route===path)return {tab:tab as AdminTab};
+ if(route===adminNewStoryPath)return {tab:'stories',newStory:true};
+ const story=route.match(/^admin\/historias\/editar\/([^/]+)$/);
+ if(story){try{const storyId=decodeURIComponent(story[1]);if(storyId.length>0&&storyId.length<=200)return {tab:'stories',storyId};}catch{/* An invalid encoded identifier is an unknown route. */}return {tab:'stories',notFound:true};}
  if(route==='admin/escolas/listar')return {tab:'schools',schoolSection:'list'};
  if(route==='admin/escolas/turmas')return {tab:'schools',schoolSection:'classes'};
  const dashboard=route.match(/^admin\/escolas\/painel\/([^/]+)(?:\/alunos\/([^/]+))?$/);if(dashboard)return {tab:'schools',schoolSection:'dashboard',schoolId:dashboard[1],...(dashboard[2]?{studentId:dashboard[2]}:{})};
