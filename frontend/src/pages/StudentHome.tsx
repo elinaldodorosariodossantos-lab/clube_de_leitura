@@ -132,7 +132,7 @@ export function StudentHome({resultRoute,onOpenResult,level,student,code,tab,att
  useEffect(()=>{recoveredAttempt.current=null;},[attemptId]);
  useEffect(()=>{
   const attempt=reading.attempt;
-  if(resultRoute||achievement||finalJourney||finishingAttempt||reading.loading||attempt?.status!=='completed'||recoveredAttempt.current===attempt.id)return;
+  if(resultRoute||achievement||finalJourney||finishingAttempt||reading.loading||attempt?.status!=='completed'||attempt.id!==attemptId||recoveredAttempt.current===attempt.id)return;
   recoveredAttempt.current=attempt.id;let cancelled=false;
   setAchievementError('');
   void (async()=>{

@@ -1,4 +1,4 @@
-﻿import {eventBoundaryDelay} from '../services/event-schedule';
+import {eventBoundaryDelay} from '../services/event-schedule';
 import {useCallback,useEffect,useRef,useState} from 'react';
 import {portalApi} from '../services/portal';
 import {AnswerSaveQueue} from '../services/answer-save-queue';
