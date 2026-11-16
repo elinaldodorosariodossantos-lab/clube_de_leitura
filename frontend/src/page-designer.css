@@ -1,0 +1,58 @@
+.club-app .page-designer-simple>.page-content-fields{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:20px;margin-bottom:26px}
+.club-app .page-content-fields>section{min-width:0;padding:20px;background:#fff;border:1px solid #d5e5f3;border-radius:14px}
+.club-app .page-designer-simple :is(.page-content-fields,.page-model-heading) h3{font-size:18px;color:#244b7a;margin:0 0 14px;line-height:1.4}
+.club-app .page-text-field textarea{min-height:190px;font-size:16px;line-height:1.75;padding:14px}
+.club-app .page-content-fields small{font-size:11px;line-height:1.6;color:#687f99}
+.club-app .page-picture-slot{min-width:0;margin-bottom:12px}
+.club-app .page-picture-thumbnail{display:block;width:100%;height:185px;object-fit:contain;background:#f7faff;border-radius:10px;border:1px solid #e0e9f4}
+.club-app .page-picture-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:160px;padding:18px;border:1px dashed #a5c4eb;border-radius:11px;background:#f6faff;color:#617f9f;text-align:center;font-size:13px}
+.club-app .page-picture-placeholder svg{color:#639ce0}
+.club-app .page-picture-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}
+.club-app .page-picture-actions>button,.club-app .page-picture-actions>.page-upload{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;margin:0;padding:9px 12px;background:#f3f8ff;border:1px solid #c7dcf3;border-radius:9px;color:#1764b2;font-size:12px;cursor:pointer}
+.club-app .page-picture-actions>button:hover,.club-app .page-picture-actions>.page-upload:hover{background:#e7f1ff}
+.club-app .page-model-heading{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:16px}
+.club-app .page-model-heading>div{min-width:0}
+.club-app .page-model-heading h3{margin:0 0 6px}
+.club-app .page-model-heading p{font-size:13px;line-height:1.6;color:#647d98;margin:0}
+.club-app .page-model-heading>span{flex-shrink:0;font-size:11px;font-weight:700;color:#1b6cc8;background:#e5f1ff;border-radius:20px;padding:6px 10px}
+.club-app .page-model-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.club-app .management-form .page-model-choice{display:flex;position:relative;flex-direction:column;min-width:0;padding:10px;margin:0;background:#fff;border:2px solid #d8e5f3;border-radius:14px;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.club-app .page-model-choice:hover:not(.is-unavailable){border-color:#77b2f4;box-shadow:0 4px 12px #1764b114}
+.club-app .management-form .page-model-choice.is-selected{border-color:#1675e8;box-shadow:0 0 0 3px #1675e814;background:#f6faff}
+.club-app .page-model-choice:focus-within{outline:3px solid #80baff;outline-offset:3px}
+.club-app .page-model-choice>input{position:absolute;width:1px;height:1px;min-height:0;opacity:0;pointer-events:none}
+.club-app .page-model-paper{display:block;width:100%;height:245px;overflow:hidden;padding:14px;background:#fff8e9;border:1px solid #e8d4ac;border-radius:9px;box-shadow:0 3px 0 #d5b77b26;pointer-events:none}
+.club-app .page-model-paper .story-page-content{height:100%;min-height:0;gap:10px;justify-content:center}
+.club-app .page-model-paper .story-page-content :is(p,h2,h3){font-size:12px;line-height:1.5;letter-spacing:0;margin:0 0 8px;overflow-wrap:anywhere}
+.club-app .page-model-paper .story-page-content h2{font-size:17px}.club-app .page-model-paper .story-page-content h3{font-size:14px}
+.club-app .page-model-paper .story-page-content .story-image{min-height:0;max-height:140px;flex-shrink:0}
+.club-app .page-model-paper .story-page-content :is(.format-full,.size-custom){height:135px;min-height:0}
+.club-app .page-model-paper .story-page-content :is(.format-portrait,.format-square){max-height:125px;width:auto;max-width:100%}
+.club-app .page-model-paper .story-page-content.template-mixed:is(.position-left,.position-right){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-content:center;align-items:center;gap:12px}
+.club-app .page-model-paper .story-page-content.template-mixed:is(.position-left,.position-right) .story-image{width:100%;height:auto;max-height:195px}
+.club-app .page-designer-simple :is(.page-model-paper,.page-selected-preview .page-preview-paper) .story-reading-copy{min-width:0}
+.club-app .page-designer-simple :is(.page-model-paper,.page-selected-preview .page-preview-paper) .position-left>.story-reading-copy{grid-column:2;grid-row:1}
+.club-app .page-designer-simple :is(.page-model-paper,.page-selected-preview .page-preview-paper) .position-right>.story-reading-copy{grid-column:1;grid-row:1}
+.club-app .page-designer-simple :is(.page-model-paper,.page-selected-preview .page-preview-paper) .template-mixed:has(>.story-reading-copy)>.story-image{grid-row:1}
+.club-app .page-model-paper .story-page-content.template-overlay{display:grid;align-content:stretch;padding:0}
+.club-app .page-model-paper .story-page-content.template-overlay>.story-image{height:100%;min-height:0;max-height:none;aspect-ratio:auto}
+.club-app .page-model-paper .story-page-content.template-overlay>.story-text{margin:8px;padding:10px}
+.club-app .page-model-label{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#214e80;font-size:14px;margin-top:13px;line-height:1.4}
+.club-app .page-model-label>svg{color:#0875e3;flex-shrink:0}
+.club-app .page-model-choice small{font-size:11px;font-weight:400;line-height:1.5;margin:5px 0 0;color:#6e829b}
+.club-app .page-model-choice.is-unavailable{cursor:default;opacity:.65}
+.page-model-placeholder{display:flex;flex-direction:column;gap:9px;width:100%;height:100%;justify-content:center}
+.page-model-placeholder>span{display:block;background:#d6e5ef;height:104px;border-radius:8px}
+.page-model-placeholder>i{height:7px;width:90%;background:#e4d5b7;border-radius:4px}.page-model-placeholder>i:last-child{width:65%}
+.placeholder-below>span{order:2}.placeholder-left{padding-right:40%}.placeholder-right{padding-left:40%}.placeholder-frame{border:2px solid #dfc797;padding:12px}.placeholder-overlay{background:#d6e5ef;padding:15px}.placeholder-overlay>span{height:90px;background:transparent}
+.club-app .page-selected-preview{margin-top:20px;border:1px solid #d3e2f4;background:#fff;border-radius:12px;padding:0 16px}
+.club-app .page-selected-preview>summary,.club-app .page-advanced-options>summary{display:flex;align-items:center;gap:9px;min-height:48px;padding:13px 0;color:#245c9a;font-size:13px;font-weight:700;cursor:pointer}
+.club-app .page-selected-preview>summary:focus-visible,.club-app .page-advanced-options>summary:focus-visible{outline:3px solid #80baff;outline-offset:2px}
+.club-app .page-selected-preview>.page-preview-paper{max-width:720px;max-height:70dvh;margin:4px auto 20px}
+.club-app .page-advanced-options{margin-top:24px;border-top:1px solid #d6e4f4;padding-top:6px}
+.club-app .page-advanced-options>summary{flex-wrap:wrap}
+.club-app .page-advanced-options>summary>span{font-size:11px;font-weight:400;color:#7287a0}
+.club-app .page-advanced-options>.page-designer{padding-top:12px}
+@media(max-width:850px){.club-app .page-designer-simple>.page-content-fields{grid-template-columns:minmax(0,1fr)}.club-app .page-model-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.club-app .page-model-heading{align-items:flex-start;flex-direction:column;gap:10px}}
+@media(max-width:450px){.club-app .page-content-fields>section{padding:14px}.club-app .page-model-grid{grid-template-columns:minmax(0,1fr)}.club-app .page-model-paper{height:260px}.club-app .page-picture-actions{gap:6px}.club-app .page-picture-actions>button,.club-app .page-picture-actions>.page-upload{flex:1;min-width:100px}}
+@media(prefers-reduced-motion:reduce){.club-app .page-model-choice{transition:none}}

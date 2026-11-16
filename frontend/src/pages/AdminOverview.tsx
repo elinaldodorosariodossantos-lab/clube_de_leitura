@@ -1,5 +1,5 @@
 ﻿import {useState} from 'react';
-import {Users,School,Star,ArrowRight,Trophy,RefreshCw,CalendarDays,ChartNoAxesCombined,Zap,BookOpen,Lightbulb,Medal,Crown,ShieldCheck} from 'lucide-react';
+import {Users,School,Star,ArrowRight,Trophy,CalendarDays,ChartNoAxesCombined,Zap,BookOpen,Lightbulb,Medal,Crown,ShieldCheck} from 'lucide-react';
 import {formatPoints} from '../services/format';
 import {useAdminResource} from '../hooks/useAdminResource';
 import {useOverviewReaders} from '../hooks/useOverviewReaders';
@@ -16,14 +16,12 @@ export function AdminOverview(){
  const [days,setDays]=useState(30),[tipOffset,setTipOffset]=useState(0);
  const highlights=readers.readers?overviewReaderHighlights(readers.readers):undefined;
  const recent=[...(readers.readers??[])].filter(s=>Number.isFinite(Date.parse(s.createdAt))).sort((a,b)=>Date.parse(b.createdAt)-Date.parse(a.createdAt)).slice(0,4);
- const date=data?.updatedAt?new Date(data.updatedAt):undefined;
- const dateLabel=date?.toLocaleString('pt-BR',{timeZone:'America/Fortaleza',dateStyle:'short',timeStyle:'short'});
  const tipDay=overviewDay(data?.updatedAt??new Date().toISOString())??'2026-01-01';
  const tip=readingTips[(Math.floor(Date.parse(tipDay+'T12:00:00Z')/86400000)+tipOffset)%readingTips.length];
  const refresh=()=>{void reload();void readers.reload();};
  const quickActions=[{label:'Cadastrar História',path:adminPaths.stories,Icon:BookOpen,tone:'blue'},{label:'Gerenciar Alunos',path:adminPaths.students,Icon:Users,tone:'green'},{label:'Criar Evento',path:adminPaths.events,Icon:CalendarDays,tone:'purple'},{label:'Ver Relatórios',path:adminPaths.reports,Icon:ChartNoAxesCombined,tone:'orange'}];
  return <div className="admin-overview">
- <section className="admin-overview-banner" aria-labelledby="overview-title"><AdminLandscape/><div className="admin-banner-book"><AdminBookMark/></div><div className="admin-banner-copy"><span>PAINEL DO CLUBE</span><h1 id="overview-title">Visão geral</h1><p>Acompanhe o desempenho e<br className="admin-banner-break"/> as atividades do clube.</p></div><div className="admin-banner-update"><CalendarDays size={18}/><span>{dateLabel?'Atualizado em: '+dateLabel:'Carregando atualização…'}</span><button type="button" onClick={refresh} disabled={loading||readers.loading} aria-label="Atualizar dados do painel" title="Atualizar dados"><RefreshCw size={18} className={loading?'admin-refresh-spin':''}/></button></div></section>
+ <section className="admin-overview-banner" aria-labelledby="overview-title"><AdminLandscape/><div className="admin-banner-book"><AdminBookMark/></div><div className="admin-banner-copy"><span>PAINEL DO CLUBE</span><h1 id="overview-title">Visão geral</h1><p>Acompanhe o desempenho e<br className="admin-banner-break"/> as atividades do clube.</p></div></section>
  <AdminQueryState loading={loading&&!data} error={error} onRetry={refresh}/>
  <div className="admin-overview-metrics" aria-label="Indicadores do clube" aria-busy={loading}>{[{Icon:Users,value:data?.totalStudents,label:'Total de alunos',hint:'Cadastros únicos',tone:'blue'},{Icon:School,value:data?.totalSchools,label:'Escolas participantes',hint:'Escolas com alunos',tone:'green'},{Icon:Trophy,value:data?.completed,label:'Atividades concluídas',hint:'Conclusões validadas',tone:'purple'},{Icon:Star,value:data?.points,label:'Total de pontos',hint:'Resultados confirmados',tone:'gold'}].map(({Icon,value,label,hint,tone})=><article className={'admin-overview-metric '+tone} key={label}><Icon size={31}/><strong>{value===undefined?'—':tone==='gold'?formatPoints(value):value.toLocaleString('pt-BR')}</strong><h2>{label}</h2><small>{hint}</small></article>)}</div>
  <AdminQueryState loading={readers.loading&&!readers.readers} error={readers.error} onRetry={()=>void readers.reload()}/>

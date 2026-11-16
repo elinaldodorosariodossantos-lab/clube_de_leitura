@@ -161,6 +161,7 @@
 
 /* Reports stay scrollable without the extra vertical rail beside the content. */
 @media screen{
+ .admin-overview-banner:not(:has(.admin-banner-update)){padding-block:24px;min-height:162px}
  .club-app .admin-modern .admin-content.admin-reports-content,
  html:has(.admin-reports-content),body:has(.admin-reports-content){scrollbar-width:none}
  .club-app .admin-modern .admin-content.admin-reports-content::-webkit-scrollbar,
