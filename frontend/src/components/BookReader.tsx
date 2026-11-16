@@ -7,7 +7,7 @@ import '../storybook.css';
 
 type Turn={from:number;to:number;forward:boolean;phase:'saving'|'turning';snapshot:HTMLElement;scroll:number};
 function PaperDecoration(){return <svg className="storybook-margin-art" viewBox="0 0 44 120" aria-hidden="true" focusable="false"><path d="M30 116C9 90 37 59 18 7" fill="none" stroke="#849843" strokeWidth="2"/><g fill="#8fa64b"><path d="M25 99C3 99 4 83 8 79C20 79 27 89 25 99Z"/><path d="M22 81C39 82 43 68 37 64C27 64 21 72 22 81Z"/><path d="M23 56C5 56 3 43 8 38C18 39 24 47 23 56Z"/><path d="M21 32C37 32 39 20 35 15C24 16 19 23 21 32Z"/></g><g fill="#e5be70"><circle cx="13" cy="108" r="3"/><circle cx="34" cy="51" r="2"/></g></svg>;}
-export function BookReader({pages,index,busy,onPage,onComplete}:{pages:BookPage[];index:number;busy:boolean;onPage:(index:number)=>void|Promise<unknown>;onComplete:()=>void}){
+export function BookReader({pages,index,busy,onPage,onComplete}:{pages:BookPage[];index:number;busy:boolean;onPage:(index:number)=>void|Promise<unknown>;onComplete:()=>void|Promise<unknown>}){
  const [turn,setTurn]=useState<Turn|null>(null),[error,setError]=useState('');
  const root=useRef<HTMLDivElement>(null),locked=useRef(false),mounted=useRef(true),timer=useRef<ReturnType<typeof setTimeout>|undefined>(undefined);
  const snapshotHost=useRef<HTMLDivElement>(null);
@@ -39,7 +39,7 @@ export function BookReader({pages,index,busy,onPage,onComplete}:{pages:BookPage[
   try{
    await onPage(next);if(!mounted.current)return;
    setTurn({...transition,phase:'turning'});
-   await new Promise<void>(resolve=>{timer.current=setTimeout(resolve,window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:240);});
+   await new Promise<void>(resolve=>{timer.current=setTimeout(resolve,window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:120);});
   }catch{if(mounted.current)setError('Não foi possível virar a página. Tente novamente; seu progresso está preservado.');}
   finally{if(mounted.current){setTurn(null);locked.current=false;root.current?.querySelector<HTMLElement>('.storybook-spread .storybook-sheet-content')?.focus({preventScroll:true});}}
  }

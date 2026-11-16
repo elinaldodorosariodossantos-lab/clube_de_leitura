@@ -13,6 +13,7 @@ import './reading.css';
 import './admin.css';
 import './student-theme.css';
 import './responsive.css';
+import './admin-modern.css';
 function route(){return window.location.hash.replace(/^#\//,'')||(['/adm','/administrador'].includes(window.location.pathname.replace(/\/$/,''))?'admin':'');}
 const studentPages:Record<string,StudentTab>={leitura:'home',jornada:'journey',progresso:'progress',perfil:'profile'};
 const tabPaths:Record<StudentTab,string>={home:'leitura',journey:'jornada',progress:'progresso',profile:'perfil'};

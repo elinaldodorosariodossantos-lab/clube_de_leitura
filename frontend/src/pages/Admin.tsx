@@ -1,8 +1,8 @@
 import {AdminAccess} from './AdminAccess';
 import {SchoolDirectory} from './SchoolDirectory';
-import {useEffect,useRef,useState} from 'react';
-import {ShieldCheck,LogOut,Users,School,LayoutDashboard,FileChartColumn,BookOpen,CalendarDays} from 'lucide-react';
-import {Brand,Notice} from '../components/PortalUI';
+import {useEffect,useState} from 'react';
+import {ShieldCheck,LogOut,Users,School,LayoutDashboard,FileChartColumn,BookOpen,CalendarDays,Menu,X,UserRound} from 'lucide-react';
+import {Notice} from '../components/PortalUI';
 import {portalApi} from '../services/portal';
 import {adminPaths,parseAdminRoute} from '../services/adminRoutes';
 import {SchoolsPanel} from './SchoolsPanel';
@@ -13,12 +13,14 @@ import '../events.css';
 import {ManageStories} from './ManageStories';
 import {mayLeaveForm} from '../services/management';
 import {CertificateSettings} from '../components/CertificateSettings';
+import {useModalFocus} from '../hooks/useModalFocus';
+import {AdminBookMark} from '../components/AdminArtwork';
 import type {AdminTab} from '../types/admin';
 type Props={route:string;authorized:boolean;onLogin:()=>Promise<void>;onLogout:()=>Promise<void>};
 export function Admin({route,authorized,onLogin,onLogout}:Props){
  useEffect(()=>{if(authorized&&(route==='admin'||route==='admin/entrar'))window.location.replace('#/admin/visao-geral');},[authorized,route]);
  if(!authorized)return <AdminLogin onLogin={onLogin}/>;
- return <div className="admin-shell"><header className="club-header"><Brand/><div className="student-header"><span className="admin-label"><ShieldCheck size={18}/>Área administrativa</span><button onClick={()=>{if(mayLeaveForm())void onLogout();}}><LogOut size={17}/>Sair</button></div></header><AdminWorkspace route={route} onLogout={onLogout}/></div>;
+ return <div className="admin-shell admin-modern"><AdminWorkspace route={route} onLogout={onLogout}/></div>;
 }
 function AdminLogin({onLogin}:{onLogin:()=>Promise<void>}){
  const [email,setEmail]=useState(''),[password,setPassword]=useState(''),[busy,setBusy]=useState(false),[error,setError]=useState('');
@@ -27,8 +29,15 @@ function AdminLogin({onLogin}:{onLogin:()=>Promise<void>}){
 }
 function AdminWorkspace({route,onLogout}:{route:string;onLogout:()=>Promise<void>}){
  const {tab,studentId,schoolId,classId,schoolSection,notFound}=parseAdminRoute(route);
- const menu=useRef<HTMLElement>(null);
- useEffect(()=>{const reveal=()=>{const nav=menu.current,selected=nav?.querySelector<HTMLElement>('a[aria-current=page]');if(!nav||!selected||nav.scrollWidth<=nav.clientWidth)return;const item=selected.getBoundingClientRect(),bounds=nav.getBoundingClientRect();nav.scrollTo({left:nav.scrollLeft+item.left-bounds.left-(nav.clientWidth-item.width)/2,behavior:'auto'});};const frame=requestAnimationFrame(reveal);window.addEventListener('resize',reveal);return()=>{cancelAnimationFrame(frame);window.removeEventListener('resize',reveal);};},[tab,route]);
+ const [menuOpen,setMenuOpen]=useState(false);
+ useModalFocus(()=>setMenuOpen(false),menuOpen);
+ useEffect(()=>{setMenuOpen(false);},[route]);
+ useEffect(()=>{const media=window.matchMedia('(min-width:981px)');const close=()=>{if(media.matches)setMenuOpen(false);};media.addEventListener('change',close);return()=>media.removeEventListener('change',close);},[]);
  const navigation:{id:AdminTab;label:string;Icon:typeof Users}[]=[{id:'overview',label:'Visão geral',Icon:LayoutDashboard},{id:'students',label:'Alunos',Icon:Users},{id:'events',label:'Eventos de Leitura',Icon:CalendarDays},{id:'stories',label:'Histórias',Icon:BookOpen},{id:'schools',label:'Escolas',Icon:School},{id:'reports',label:'Relatórios',Icon:FileChartColumn},{id:'access',label:'Acessos',Icon:ShieldCheck}];
- return <div className="portal-layout admin-workspace"><nav ref={menu} className="portal-nav admin-nav" aria-label="Menu administrativo">{navigation.map(({id,label,Icon})=><a href={'#/'+adminPaths[id]} key={id} aria-current={tab===id?'page':undefined} className={tab===id?'selected':''}><Icon size={19}/>{label}</a>)}<button className="admin-sidebar-logout" onClick={()=>{if(mayLeaveForm())void onLogout();}}><LogOut size={18}/>Sair</button></nav><main className="portal-content admin-content">{notFound?<Notice>Esta página administrativa não foi encontrada. <a href="#/admin/visao-geral">Ir para a visão geral</a></Notice>:tab==='overview'?<AdminOverview/>:tab==='students'?<ManageStudents selectedId={studentId}/>:tab==='events'?<ReadingEvents/>:tab==='schools'?(studentId||schoolSection==='dashboard'?<SchoolsPanel key={schoolSection==='dashboard'?schoolId:'schools-dashboard'} selectedId={studentId} initialSchoolId={schoolSection==='dashboard'?schoolId:undefined}/>:<SchoolDirectory key={route} schoolId={schoolId} classId={classId} classes={schoolSection==='classes'}/>):tab==='stories'?<ManageStories/>:tab==='reports'?<SchoolsPanel report/>:tab==='access'?<AdminAccess/>:<><h1>Configurações</h1><CertificateSettings/></>}</main></div>;
+ const logout=()=>{if(mayLeaveForm())void onLogout();};
+ return <div className="portal-layout admin-workspace">
+ <header className="admin-topbar"><button className="admin-menu-toggle" aria-label="Abrir menu administrativo" aria-controls="admin-sidebar" aria-expanded={menuOpen} onClick={()=>setMenuOpen(true)}><Menu size={23}/></button><div className="admin-greeting"><span className="admin-avatar"><UserRound size={26}/></span><div><strong>Olá, Administrador!</strong><span>Bem-vindo ao painel do Clube da Leitura</span></div></div><div className="admin-topbar-actions"><span><ShieldCheck size={21}/>Área Administrativa</span><button onClick={logout}><LogOut size={19}/>Sair</button></div></header>
+ {menuOpen&&<button className="admin-menu-backdrop" aria-label="Fechar menu administrativo" tabIndex={-1} onClick={()=>setMenuOpen(false)}/>}
+ <aside id="admin-sidebar" className={'admin-sidebar'+(menuOpen?' is-open':'')} role={menuOpen?'dialog':undefined} aria-modal={menuOpen?true:undefined} aria-label="Navegação administrativa"><button className="admin-menu-close" aria-label="Fechar menu" onClick={()=>setMenuOpen(false)}><X size={22}/></button><a className="admin-sidebar-brand" href="#/admin/visao-geral" aria-label="Clube da Leitura — visão geral"><AdminBookMark/><span>Clube da<strong>Leitura</strong></span></a><nav className="portal-nav admin-nav" aria-label="Menu administrativo">{navigation.map(({id,label,Icon})=><a href={'#/'+adminPaths[id]} key={id} aria-current={tab===id?'page':undefined} className={tab===id?'selected':''}><Icon size={21}/>{label}</a>)}</nav><div className="admin-sidebar-art" aria-hidden="true"><span>★</span><img src="/images/leitora.png" alt=""/><small>Cada página, uma descoberta.</small></div><button className="admin-sidebar-logout" onClick={logout}><LogOut size={20}/>Sair</button></aside>
+ <main className="portal-content admin-content">{notFound?<Notice>Esta página administrativa não foi encontrada. <a href="#/admin/visao-geral">Ir para a visão geral</a></Notice>:tab==='overview'?<AdminOverview/>:tab==='students'?<ManageStudents selectedId={studentId}/>:tab==='events'?<ReadingEvents/>:tab==='schools'?(studentId||schoolSection==='dashboard'?<SchoolsPanel key={schoolSection==='dashboard'?schoolId:'schools-dashboard'} selectedId={studentId} initialSchoolId={schoolSection==='dashboard'?schoolId:undefined}/>:<SchoolDirectory key={route} schoolId={schoolId} classId={classId} classes={schoolSection==='classes'}/>):tab==='stories'?<ManageStories/>:tab==='reports'?<SchoolsPanel report/>:tab==='access'?<AdminAccess/>:<><h1>Configurações</h1><CertificateSettings/></>}</main></div>;
 }
