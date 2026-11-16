@@ -2899,6 +2899,13 @@ begin
  end if;
  select array_agg(id) into identities from(
   select usuario_id id from clube_private.sessoes where aluno_id=student union select person.perfil_id) ids;
+ -- Bases opcionais do reinicio de pontuacao pertencentes ao aluno.
+ if to_regclass('clube_private.reinicio_contagem_contextos') is not null then
+  execute 'delete from clube_private.reinicio_contagem_contextos where aluno_id=$1' using student;
+ end if;
+ if to_regclass('clube_private.reinicio_contagem_alunos') is not null then
+  execute 'delete from clube_private.reinicio_contagem_alunos where aluno_id=$1' using student;
+ end if;
  delete from clube_private.sessoes where aluno_id=student;
  delete from clube_private.acessos where aluno_id=student;
  delete from clube_private.recompensas_moedas where aluno_id=student;

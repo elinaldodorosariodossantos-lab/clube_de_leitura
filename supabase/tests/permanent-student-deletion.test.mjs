@@ -26,7 +26,9 @@ test('permanent student deletion purges history, credentials and rankings atomic
   await identity(visitor);assert.ok((await rpc('clube_portal','return',{code:students[0].code})).student);
   await identity(admin,false);await manage('student_delete',{id:students[2].id});
   await identity(users[1]);const oldRank=(await reading('achievement_get',{id:results[1].achievementId})).achievement.ranking;assert.equal(oldRank.length,3);
-  await db.exec('reset role');await db.exec(migration);
+  await db.exec('reset role');
+  await db.exec('create table clube_private.reinicio_contagem_alunos(aluno_id uuid primary key references public.alunos(id));create table clube_private.reinicio_contagem_contextos(aluno_id uuid,contexto_id uuid);insert into clube_private.reinicio_contagem_alunos select id from public.alunos;insert into clube_private.reinicio_contagem_contextos select aluno_id,id from public.jornadas');
+  await db.exec(migration);
   assert.equal((await db.query('select count(*) n from public.alunos where id=$1',[students[2].id])).rows[0].n,0);
   await identity(users[1]);assert.equal((await reading('achievement_get',{id:results[1].achievementId})).achievement.ranking.length,2);
   await assert.rejects(manage('student_delete',{id:students[0].id}),e=>e.code==='42501');
@@ -47,7 +49,7 @@ test('permanent student deletion purges history, credentials and rankings atomic
   assert.equal((await manage('student_delete',{id:students[0].id})).deleted,true);
   await assert.rejects(rpc('clube_admin','student',{id:students[0].id}),e=>e.code==='P0002');
   await db.exec('reset role');
-  for(const table of ['public.alunos','public.tentativas','public.jornadas','public.evento_alunos','clube_private.acessos','clube_private.sessoes','clube_private.conquistas_niveis','clube_private.avaliacoes_niveis','clube_private.recompensas_moedas','clube_private.conclusoes_jornadas','clube_private.pontuacao_legada','clube_private.atribuicoes_jornada','clube_private.autorizacoes_reinicio_jornada']){
+  for(const table of ['public.alunos','public.tentativas','public.jornadas','public.evento_alunos','clube_private.acessos','clube_private.sessoes','clube_private.conquistas_niveis','clube_private.avaliacoes_niveis','clube_private.recompensas_moedas','clube_private.conclusoes_jornadas','clube_private.pontuacao_legada','clube_private.atribuicoes_jornada','clube_private.autorizacoes_reinicio_jornada','clube_private.reinicio_contagem_alunos','clube_private.reinicio_contagem_contextos']){
    const column=table==='public.alunos'?'id':'aluno_id';assert.equal((await db.query('select count(*) n from '+table+' where '+column+'=any($1::uuid[])',[[students[0].id,students[2].id]])).rows[0].n,0,table);
   }
   assert.equal((await db.query('select count(*) n from auth.users where id=any($1::uuid[])',[[users[0],users[2],visitor]])).rows[0].n,0);
