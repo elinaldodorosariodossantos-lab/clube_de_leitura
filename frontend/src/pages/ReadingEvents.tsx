@@ -1,3 +1,4 @@
+import {confirmAction} from '../services/confirmation';
 import {useRef,useState} from 'react';
 import {CalendarDays,Plus,Pencil,Send,Trash2,BookOpen,Users,Power,ArrowLeft} from 'lucide-react';
 import {Notice} from '../components/PortalUI';
@@ -18,7 +19,7 @@ export function ReadingEvents(){
  function reveal(){window.setTimeout(()=>section.current?.scrollIntoView({behavior:'smooth',block:'start'}),0);}
  async function action(event:ReadingEvent,op:'status'|'delete'){
   const question=op==='delete'?`Apagar “${event.name}”? Se houver destinatários ou histórico, o evento será arquivado e os resultados serão preservados.`:`${event.active?'Inativar':'Ativar'} “${event.name}”? O progresso será preservado.`;
-  if(busy||!window.confirm(question))return;setBusy(true);setError('');
+  if(busy||!await confirmAction(question))return;setBusy(true);setError('');
   try{const result=await eventApi<{archived?:boolean}>('/admin/'+event.id+'/'+op,'POST',op==='status'?{active:!event.active}:{});setMessage(op==='delete'?(result.archived?'Evento arquivado. O histórico foi preservado.':'Evento excluído.'): 'Situação atualizada.');await reload();}catch(e){setError((e as Error).message);}finally{setBusy(false);}
  }
  if(editor)return <section className="events-module"><EventEditor key={editor.id??'new'} initial={editor} onClose={()=>setEditor(undefined)} onSaved={async()=>{setEditor(undefined);setMessage('Evento salvo.');await reload();}}/></section>;

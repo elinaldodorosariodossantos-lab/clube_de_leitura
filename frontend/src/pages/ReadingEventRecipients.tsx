@@ -1,3 +1,4 @@
+import {confirmAction} from '../services/confirmation';
 import {useRef,useState} from 'react';
 import {Send,Users} from 'lucide-react';
 import {Notice} from '../components/PortalUI';
@@ -15,7 +16,7 @@ export function EventRecipients({event,onSent}:{event:ReadingEvent;onSent:()=>Pr
  const summary=event.ageConfigs?.length?ageSummary(event.ageConfigs):`${levelNames[event.level]}: ${event.quantity} histórias por aluno`;
  const filtered=resource.data?.students??[],visible=filtered.slice((page-1)*10,page*10),selectable=filtered.filter(s=>s.eligible&&!s.assigned);
  function toggle(id:string,checked:boolean){setSelected(old=>{const next=new Set(old);if(checked)next.add(id);else next.delete(id);return next;});}
- async function send(){if(inFlight.current||!selected.size||!check.data?.valid){setError('Confira a disponibilidade das histórias antes de distribuir.');return;}if(!window.confirm(`Confirmar o envio de “${event.name}” para ${selected.size} alunos? ${summary}. Serão sorteados apenas os níveis liberados para cada aluno. Envios existentes não serão sorteados novamente.`))return;
+ async function send(){if(inFlight.current||!selected.size||!check.data?.valid){setError('Confira a disponibilidade das histórias antes de distribuir.');return;}if(!await confirmAction(`Confirmar o envio de “${event.name}” para ${selected.size} alunos? ${summary}. Serão sorteados apenas os níveis liberados para cada aluno. Envios existentes não serão sorteados novamente.`))return;
   inFlight.current=true;setBusy(true);setError('');setMessage('');
   try{const result=await eventApi<{created:number;existing:number}>('/admin/'+event.id+'/send','POST',{studentIds:[...selected]});setSelected(new Set());setMessage(`${result.created} novos destinatários. ${result.existing} envios anteriores preservados.`);await resource.reload();await report.reload();await check.reload();await onSent();}catch(e){setError((e as Error).message);}finally{inFlight.current=false;setBusy(false);}
  }

@@ -1,3 +1,4 @@
+import {confirmAction} from '../services/confirmation';
 import {StudentActionDialog} from '../components/StudentActionDialog';
 import {formatPoints} from '../services/format';
 import {useEffect,useRef,useState} from 'react';
@@ -44,7 +45,7 @@ function StudentForm({initial,schools,onClose,onSaved}:{initial:ManagedStudent|n
  const submission=useRef(false),requestId=useRef(crypto.randomUUID()),errorRef=useRef<HTMLDivElement>(null);
  useEffect(()=>{if(error){errorRef.current?.scrollIntoView({block:'center',behavior:'smooth'});errorRef.current?.focus({preventScroll:true});}},[error]);
  function change(field:keyof typeof data,value:string){if(submission.current)return;requestId.current=crypto.randomUUID();setData(d=>({...d,[field]:value}));setDirty(true);}
- function cancel(){if(!busy&&(!dirty||window.confirm('Descartar as alterações não salvas?')))onClose();}
+ async function cancel(){if(!busy&&(!dirty||await confirmAction('Descartar as alterações não salvas?')))onClose();}
  useModalFocus(cancel);
  async function save(e:React.FormEvent){
   e.preventDefault();if(submission.current)return;

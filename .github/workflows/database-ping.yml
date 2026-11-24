@@ -1,0 +1,27 @@
+name: Verificar banco diariamente
+
+on:
+  schedule:
+    # 10:00 UTC = 07:00 em America/Fortaleza (UTC-3).
+    - cron: '0 10 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daily-database-ping
+  cancel-in-progress: false
+
+jobs:
+  database-ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Consultar configurações no banco
+        env:
+          APP_URL: ${{ vars.APP_URL || 'https://clube-de-leitura-edu.vercel.app' }}
+        run: node backend/scripts/ping-database.mjs

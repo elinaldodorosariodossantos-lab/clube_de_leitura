@@ -5,6 +5,15 @@
 .club-app .story-editor-page .story-form-heading h1{margin:0;font-size:clamp(24px,2.4vw,34px);line-height:1.2;overflow-wrap:anywhere}
 .club-app .story-editor-page .story-form-heading h1:focus{outline:none}
 .club-app .story-editor-page fieldset{min-width:0}
+.club-app .story-library p{margin:0 0 16px;color:#617c9e}
+.club-app .story-library button{display:inline-flex;align-items:center;gap:8px}
+.club-app .story-library input{margin-bottom:12px}
+.club-app .story-library-list{list-style:none;padding:0;margin:12px 0 0;max-height:360px;overflow:auto}
+.club-app .story-library-list li{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid #dce8f7}
+.club-app .story-library-list li>div{min-width:0;overflow-wrap:anywhere}
+.club-app .story-library-list small{display:block;margin-top:4px;color:#617c9e}
+.club-app .story-library-list button{flex-shrink:0}
+@media(max-width:600px){.club-app .story-library-list li{align-items:flex-start;flex-direction:column}}
 @media(max-width:600px){
  .club-app .admin-modern .admin-content .management-dialog.story-editor.story-editor-page{padding:16px;border-radius:16px}
  .club-app .story-editor-page .story-form-heading{align-items:flex-start;flex-wrap:wrap;gap:16px}

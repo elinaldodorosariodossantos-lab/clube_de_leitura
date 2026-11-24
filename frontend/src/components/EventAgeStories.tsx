@@ -1,3 +1,4 @@
+import {confirmAction} from '../services/confirmation';
 import {useAdminResource} from '../hooks/useAdminResource';
 import type {EligibleStory} from '../types/events';
 import {useState} from 'react';
@@ -11,20 +12,20 @@ const levels=['facil','medio','dificil'] as const;
 export function EventAgeStories({configs,onChange,distributed}:{configs:AgeConfig[];onChange:(configs:AgeConfig[])=>void;distributed:boolean}){
  const [error,setError]=useState('');
  function addAge(){const age=Array.from({length:16},(_,i)=>i+4).find(a=>!configs.some(c=>c.age===a));if(age!==undefined){setError('');onChange([...configs,{age,levels:[]}]);}}
- function changeAge(index:number,age:number){
+ async function changeAge(index:number,age:number){
   if(!Number.isInteger(age)||age<4||age>19){setError('Informe uma idade inteira entre 4 e 19 anos.');return;}
   if(configs.some((c,i)=>i!==index&&c.age===age)){setError('Essa idade já está configurada.');return;}
-  if(distributed&&!window.confirm('Alterar a idade e limpar somente os conjuntos futuros? As atribuições e o histórico existentes serão preservados.'))return;
+  if(distributed&&!await confirmAction('Alterar a idade e limpar somente os conjuntos futuros? As atribuições e o histórico existentes serão preservados.'))return;
   setError('');onChange(configs.map((c,i)=>i===index?{...c,age,levels:c.levels.map(l=>({...l,storyIds:[]}))}:c));
  }
- function removeAge(index:number){
-  if(distributed&&!window.confirm('Remover esta idade da configuração futura? As atribuições, leituras, respostas e pontuações existentes serão preservadas.'))return;
+ async function removeAge(index:number){
+  if(distributed&&!await confirmAction('Remover esta idade da configuração futura? As atribuições, leituras, respostas e pontuações existentes serão preservadas.'))return;
   setError('');onChange(configs.filter((_,i)=>i!==index));
  }
- function quantity(index:number,level:ReadingLevel,value:number){
+ async function quantity(index:number,level:ReadingLevel,value:number){
   if(!Number.isSafeInteger(value)||value<0){setError('Informe uma quantidade inteira maior ou igual a zero.');return;}
   const previous=configs[index].levels.find(l=>l.level===level);
-  if(value===0&&previous&&distributed&&!window.confirm('Desativar este nível para novos envios? O conjunto futuro será removido; atribuições e histórico serão preservados.'))return;
+  if(value===0&&previous&&distributed&&!await confirmAction('Desativar este nível para novos envios? O conjunto futuro será removido; atribuições e histórico serão preservados.'))return;
   setError('');
   onChange(configs.map((c,i)=>i===index?withLevelQuantity(c,level,value):c));
  }

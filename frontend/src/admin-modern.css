@@ -1,5 +1,15 @@
 ﻿/* Administrative presentation only. Scoped away from the student experience. */
 @media screen{
+/* Keep desktop scrolling inside the workspace, including short viewports. */
+@media(min-width:981px){
+ html:has(.admin-modern),body:has(.admin-modern){height:100%;overflow:hidden;overscroll-behavior:none}
+ body:has(.admin-modern) #root{height:100dvh;min-height:0;overflow:hidden}
+ .club-app:has(>.admin-modern){height:100dvh;min-height:0;overflow:hidden}
+ .club-app .admin-modern .admin-sidebar{overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+ .club-app .admin-modern .admin-sidebar::-webkit-scrollbar{display:none}
+ .club-app .admin-modern .admin-sidebar-brand{flex-shrink:0}
+ .club-app .admin-modern .admin-sidebar .admin-nav{flex-shrink:0}
+}
 .club-app .admin-modern{--admin-navy:#07366f;--admin-text:#103b70;--admin-border:#e0eafa;height:100dvh;min-height:100dvh;overflow:hidden;background:#f5f9ff;color:var(--admin-text)}
 .club-app .admin-modern .admin-workspace{display:grid;grid-template-columns:218px minmax(0,1fr);grid-template-rows:82px minmax(0,1fr);gap:0;max-width:none;width:100%;height:100%;min-height:0;margin:0;padding:0;overflow:hidden}
 .club-app .admin-modern .admin-sidebar{grid-column:1;grid-row:1/-1;position:relative;display:flex;flex-direction:column;height:100%;min-height:0;padding:22px 10px 16px;background:radial-gradient(ellipse at 0 80%,#0e5ba3 0,transparent 45%),linear-gradient(155deg,#083c80,#063474 62%,#073269);box-shadow:2px 0 14px #1639610b;color:#fff;z-index:25}

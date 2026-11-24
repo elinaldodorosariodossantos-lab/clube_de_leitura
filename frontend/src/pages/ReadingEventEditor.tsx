@@ -1,3 +1,4 @@
+import {confirmAction} from '../services/confirmation';
 import {useRef,useState} from 'react';
 import {ArrowLeft,ArrowRight,Upload,Trash2} from 'lucide-react';
 import {Notice} from '../components/PortalUI';
@@ -13,7 +14,7 @@ export function EventEditor({initial,onClose,onSaved}:{initial:EventDraft;onClos
  const [step,setStep]=useState(0);
  const [data,setData]=useState({...initial,schoolIds:initial.schoolIds??[],ageConfigs:initialAgeConfigs(initial),startsAt:localDate(initial.startsAt),endsAt:localDate(initial.endsAt)}),[dirty,setDirty]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState('');const imageInput=useRef<HTMLInputElement>(null);const saving=useRef(false),requestId=useRef(crypto.randomUUID());useUnsavedForm(dirty);
  function change<K extends keyof EventDraft>(key:K,value:EventDraft[K]){if(saving.current)return;setData(d=>({...d,[key]:value}));setDirty(true);}
- function back(){if(busy)return;if(step>0){setError('');setStep(step-1);return;}if(!dirty||window.confirm('Descartar as alterações não salvas e voltar para os eventos?'))onClose();}
+ async function back(){if(busy)return;if(step>0){setError('');setStep(step-1);return;}if(!dirty||await confirmAction('Descartar as alterações não salvas e voltar para os eventos?'))onClose();}
  async function upload(file?:File){if(!file)return;if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>5*1024*1024){setError('Envie PNG, JPEG ou WebP de até 5 MB.');return;}setBusy(true);try{const response=await fetch('/api/portal/admin/manage/covers',{method:'POST',credentials:'same-origin',headers:{'Content-Type':file.type},body:file});const result=await response.json();if(!response.ok)throw Error(result.error??'Não foi possível enviar a capa.');change('cover',result.url);}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
  async function save(e:React.FormEvent){e.preventDefault();if(saving.current)return;setError('');
   if(step===0){if(data.name.trim().length<2||!data.description.trim()){setError('Preencha o nome e a descrição do evento.');return;}setStep(1);return;}
@@ -27,7 +28,7 @@ export function EventEditor({initial,onClose,onSaved}:{initial:EventDraft;onClos
   const minAge=Math.min(...data.ageConfigs.map(c=>c.age)),maxAge=Math.max(...data.ageConfigs.map(c=>c.age)),level=data.ageConfigs[0].levels[0].level;
   if(!Number.isFinite(start)||!Number.isFinite(end)||end<=start){setError('Confira a faixa etária e informe um encerramento posterior ao início.');return;}
   const confirmChanges=!!initial.recipients;
-  if(confirmChanges&&!window.confirm('Este evento já foi enviado. A seleção e o conteúdo dos participantes atuais serão preservados; a nova seleção valerá para novos destinatários. O período e a situação serão atualizados para todos. Salvar?'))return;
+  if(confirmChanges&&!await confirmAction('Este evento já foi enviado. A seleção e o conteúdo dos participantes atuais serão preservados; a nova seleção valerá para novos destinatários. O período e a situação serão atualizados para todos. Salvar?'))return;
   saving.current=true;setBusy(true);try{await eventApi('/admin'+(initial.id?'/'+initial.id:''),initial.id?'PUT':'POST',{...data,automatic:true,mode:'sorteio',level,minAge,maxAge,storyIds,quantity,startsAt:new Date(start).toISOString(),endsAt:new Date(end).toISOString(),requestId:requestId.current,confirmChanges});setDirty(false);await onSaved();}catch(e){setError((e as Error).message);}finally{saving.current=false;setBusy(false);}
  }
  const pageTitles=['Informações do evento','Data e situação do evento','Quantidade de histórias por aluno'];
