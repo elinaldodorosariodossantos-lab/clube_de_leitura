@@ -31,6 +31,12 @@ const list=await school('schools_list'),aurora=list.schools.find(s=>s.name==='Es
   const classes=await school('classes_list',{schoolId:aurora.id});
   assert.equal((await school('school_delete',{schoolId:aurora.id})).historyPreserved,true);
   assert.equal((await school('school_delete',{schoolId:aurora.id})).deleted,true);
+  const choices=await rpc('clube_gestao','schools');
+  assert.ok(choices.some(s=>s.id===bosque.id));
+  assert.ok(choices.every(s=>s.id!==aurora.id));
+  assert.ok((await rpc('clube_gestao','students')).schools.every(s=>s.id!==aurora.id));
+  await assert.rejects(rpc('clube_gestao','school_save',{name:'Escola Aurora'}),e=>e.code==='22023');
+  await assert.rejects(rpc('clube_gestao','student_save',{id:a.id,schoolId:aurora.id}),e=>e.code==='22023');
   const list=await school('schools_list',{pageSize:1});
   assert.ok(list.schools.every(s=>s.id!==aurora.id));
   assert.equal((await school('schools_list',{municipality:'Sao Luis'})).total,0);

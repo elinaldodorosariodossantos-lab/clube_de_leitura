@@ -27,7 +27,9 @@ async function ageRpc(res, op, args) { const ready = await res.locals.client.rpc
     throw Object.assign(new Error('Aplique a migração 202610230001_eventos_idades.sql para configurar idades e níveis.'), { status: 503 }); return rpc(res, op, args); }
 events.get('/admin/:id/distribution-check', async (req, res) => res.json(await ageRpc(res, 'distribution_check', { id: parse(uuid, req.params.id) })));
 events.get('/admin/:id/report', async (req, res) => res.json(await ageRpc(res, 'report', { id: parse(uuid, req.params.id) })));
-events.post('/admin', async (req, res) => res.status(201).json(await (req.body.ageConfigs ? ageRpc : rpc)(res, 'save', parse(eventSchema.safeExtend({ requestId: uuid }), req.body))));
+// Zod 4.0.0 (usado na Edge Function) ainda não oferece safeExtend.
+const createEventSchema = eventSchema.refine(value => !!value.requestId, { message: 'Informe o identificador da solicitação.' });
+events.post('/admin', async (req, res) => res.status(201).json(await (req.body.ageConfigs ? ageRpc : rpc)(res, 'save', parse(createEventSchema, req.body))));
 events.get('/admin/:id', async (req, res) => res.json(await rpc(res, 'get', { id: parse(uuid, req.params.id) })));
 events.put('/admin/:id', async (req, res) => res.json(await (req.body.ageConfigs ? ageRpc : rpc)(res, 'save', { ...parse(eventSchema, req.body), id: parse(uuid, req.params.id) })));
 events.post('/admin/:id/status', async (req, res) => res.json(await rpc(res, 'status', { id: parse(uuid, req.params.id), ...parse(z.object({ active: z.boolean() }), req.body) })));

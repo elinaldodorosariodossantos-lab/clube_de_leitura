@@ -21,6 +21,8 @@ test('eventos HTTP: validação e operações encaminhadas ao RPC seguro',async(
  try{
   assert.equal((await request('/mine','GET',undefined,false)).status,401);assert.equal(calls.length,0);
   assert.equal((await request('/admin','POST',{...input,quantity:2})).status,400);assert.equal(calls.length,0);
+  for(const requestId of [undefined,'', 'invalid'])assert.equal((await request('/admin','POST',{...input,requestId})).status,400);
+  assert.equal(calls.length,0);
   assert.equal((await request('/admin','POST',input)).status,201);assert.equal(calls[0].fn,'clube_eventos');assert.equal(calls[0].op,'save');
   assert.equal((await request('/admin','POST',{...input,automatic:true,storyIds:[],quantity:13,ageConfigs:[{age:4,levels:[{level:'facil',quantity:5},{level:'medio',quantity:3},{level:'dificil',quantity:5}]}]})).status,201);assert.equal(calls.at(-1)?.args.automatic,true);assert.equal(calls.at(-1)?.args.ageConfigs[0].levels[0].storyIds.length,0);
   const school=randomUUID();assert.equal((await request('/admin/schools')).status,200);assert.equal(calls.at(-1)?.op,'school_options');

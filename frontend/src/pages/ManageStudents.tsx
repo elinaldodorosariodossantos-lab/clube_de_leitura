@@ -37,9 +37,8 @@ function StudentForm({initial,schools,onClose,onSaved}:{initial:ManagedStudent|n
  const today=new Date().toLocaleDateString('en-CA',{timeZone:'America/Fortaleza'}),age=studentAge(data.birthDate,today);
  const classOptions=useAdminResource<{classes:{name:string}[]}>('/admin/schools/classes?'+new URLSearchParams({schoolId:data.schoolId,schoolYear:data.schoolYear,pageSize:'100'}),!data.schoolId);
  const registeredSchools=useAdminResource<School[]>('/admin/manage/schools');
- useEffect(()=>{if(registeredSchools.data)setOptions(registeredSchools.data);},[registeredSchools.data]);
+ useEffect(()=>{if(registeredSchools.data){setOptions(registeredSchools.data);setData(previous=>previous.schoolId&&!registeredSchools.data!.some(s=>s.id===previous.schoolId)?{...previous,schoolId:''}:previous);}},[registeredSchools.data]);
  const gradeOptions=[...new Set([...Array.from({length:9},(_,i)=>(i+1)+'º ano'),...(classOptions.data?.classes.map(c=>c.name)??[])])];
- useEffect(()=>{if(schools.length)setOptions(previous=>[...previous.filter(s=>!schools.some(v=>v.id===s.id)),...schools]);},[schools]);
  const schoolPanel=useRef<HTMLDetailsElement>(null),schoolSubmission=useRef(false);
  const [schoolAdding,setSchoolAdding]=useState(false),[schoolMessage,setSchoolMessage]=useState('');
  const submission=useRef(false),requestId=useRef(crypto.randomUUID()),errorRef=useRef<HTMLDivElement>(null);
