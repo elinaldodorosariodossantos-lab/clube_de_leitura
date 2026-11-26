@@ -1,0 +1,10 @@
+{
+  "git.enableSmartCommit": true,
+  "git.smartCommitChanges": "all",
+  "git.confirmSmartCommit": false,
+  "git.showActionButton": {
+    "commit": true,
+    "publish": true,
+    "sync": true
+  }
+}
